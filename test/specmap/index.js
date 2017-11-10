@@ -517,6 +517,24 @@ describe('specmap', function () {
             })
         })
 
+        it('should fail if we cannot resolve a ref because it lacks a leading `/`', function () {
+          return mapSpec({
+            spec: {
+              nested: {one: 1},
+              another: {$ref: '#nested'}
+            },
+            plugins: [plugins.refs]
+          })
+            .then((res) => {
+              expect(res.spec).toEqual({
+                nested: {one: 1},
+                another: {$ref: '#nested'}
+              })
+              expect(res.errors[0].$ref).toEqual('#nested')
+              expect(res.errors[0].pointer).toEqual('/nested')
+            })
+        })
+
         it('should resolve petstore-simple', function () {
           const spec = clone(require('./data/specs/petstore-simple.json')) // eslint-disable-line global-require
           const resolvedSpec = clone(require('./data/specs/petstore-simple-resolved.json')) // eslint-disable-line global-require
