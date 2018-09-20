@@ -21,6 +21,7 @@ rules:
   vars-on-top: 0
   import/prefer-default-export: 1
   no-multi-spaces: 1
+  no-mixed-operators: 2
   camelcase: 2
   brace-style: [2, stroustrup]
   no-use-before-define: [2, nofunc]
