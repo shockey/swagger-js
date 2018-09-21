@@ -1,15 +1,15 @@
 module.exports = {
-  name: 'link to a cyclic node',
+  name: "link to a cyclic node",
   spec: {
     x: {
-      $ref: 'http://1/spec#/a'
+      $ref: "http://1/spec#/a"
     }
   },
   external: {
-    'http://1/spec': {
+    "http://1/spec": {
       a: {
         b: {
-          $ref: '#/a'
+          $ref: "#/a"
         }
       }
     }
@@ -17,7 +17,7 @@ module.exports = {
   output: {
     x: {
       b: {
-        $ref: '#/a'
+        $ref: "#/a"
       }
     }
   }

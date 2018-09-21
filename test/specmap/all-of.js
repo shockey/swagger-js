@@ -1,12 +1,12 @@
-import xmock from 'xmock'
-import mapSpec, {plugins} from '../../src/specmap'
+import xmock from "xmock"
+import mapSpec, {plugins} from "../../src/specmap"
 
-describe('allOf', () => {
+describe("allOf", () => {
   afterEach(() => {
     xmock().restore()
   })
 
-  test('should resolve simple allOf', () => {
+  test("should resolve simple allOf", () => {
     return mapSpec({
       spec: {
         allOf: [
@@ -27,7 +27,7 @@ describe('allOf', () => {
   })
 
   test(
-    'should return empty object when you pass nothing to allOf',
+    "should return empty object when you pass nothing to allOf",
     (done) => {
       return mapSpec({
         spec: {allOf: []},
@@ -42,11 +42,11 @@ describe('allOf', () => {
     }
   )
 
-  test('should resolve local $refs in allOf', () => {
+  test("should resolve local $refs in allOf", () => {
     return mapSpec({
       spec: {
         allOf: [
-          {one: {$ref: '#/bar'}},
+          {one: {$ref: "#/bar"}},
           {two: 2}
         ],
         bar: {baz: 4}
@@ -64,14 +64,14 @@ describe('allOf', () => {
     })
   })
 
-  test('should not overwrite properties that are already present', () => {
+  test("should not overwrite properties that are already present", () => {
     return mapSpec({
       spec: {
-        original: 'yes',
+        original: "yes",
         allOf: [
           {
-            original: 'no',
-            notOriginal: 'yes'
+            original: "no",
+            notOriginal: "yes"
           }
         ]
       },
@@ -80,46 +80,46 @@ describe('allOf', () => {
       expect(res).toEqual({
         errors: [],
         spec: {
-          original: 'yes',
-          notOriginal: 'yes'
+          original: "yes",
+          notOriginal: "yes"
         }
       })
     })
   })
 
-  test('should set $$ref values', () => {
+  test("should set $$ref values", () => {
     return mapSpec({
       allowMetaPatches: true,
       spec: {
         Pet: {
-          type: 'object',
+          type: "object",
           properties: {
             name: {
-              type: 'string'
+              type: "string"
             }
           }
         },
         Cat: {
           allOf: [
-            {$ref: '#/Pet'},
+            {$ref: "#/Pet"},
             {
-              type: 'object',
+              type: "object",
               properties: {
                 meow: {
-                  type: 'string'
+                  type: "string"
                 }
               }
             }
           ]
         },
         Animal: {
-          type: 'object',
+          type: "object",
           properties: {
             pet: {
-              $ref: '#/Pet'
+              $ref: "#/Pet"
             },
             cat: {
-              $ref: '#/Cat'
+              $ref: "#/Cat"
             }
           }
         }
@@ -130,47 +130,47 @@ describe('allOf', () => {
         errors: [],
         spec: {
           Pet: {
-            type: 'object',
+            type: "object",
             properties: {
               name: {
-                type: 'string'
+                type: "string"
               }
             }
           },
           Cat: {
             properties: {
               meow: {
-                type: 'string'
+                type: "string"
               },
               name: {
-                type: 'string'
+                type: "string"
               }
             },
-            type: 'object'
+            type: "object"
           },
           Animal: {
-            type: 'object',
+            type: "object",
             properties: {
               pet: {
-                $$ref: '#/Pet',
+                $$ref: "#/Pet",
                 properties: {
                   name: {
-                    type: 'string'
+                    type: "string"
                   }
                 },
-                type: 'object'
+                type: "object"
               },
               cat: {
-                $$ref: '#/Cat',
+                $$ref: "#/Cat",
                 properties: {
                   meow: {
-                    type: 'string'
+                    type: "string"
                   },
                   name: {
-                    type: 'string'
+                    type: "string"
                   }
                 },
-                type: 'object'
+                type: "object"
               }
             }
           }
@@ -179,21 +179,21 @@ describe('allOf', () => {
     })
   })
 
-  test('should return error if allOf is not an array', () => {
+  test("should return error if allOf is not an array", () => {
     return mapSpec({
       spec: {
         allOf: {}
       },
       plugins: [plugins.allOf]
     }).then((res) => {
-      expect(res.errors[0].message).toEqual('allOf must be an array')
-      expect(res.errors[0].fullPath).toEqual(['allOf'])
+      expect(res.errors[0].message).toEqual("allOf must be an array")
+      expect(res.errors[0].fullPath).toEqual(["allOf"])
       expect(res.spec).toEqual({allOf: {}})
     })
   })
 
   test(
-    'should ignore "allOf" in freely named Swagger key positions',
+    "should ignore \"allOf\" in freely named Swagger key positions",
     () => {
       const spec = {
         parameters: {
@@ -233,7 +233,7 @@ describe('allOf', () => {
     }
   )
 
-  test('should throw error if allOf has a non-object item', () => {
+  test("should throw error if allOf has a non-object item", () => {
     return mapSpec({
       spec: {
         allOf: [
@@ -243,13 +243,13 @@ describe('allOf', () => {
       },
       plugins: [plugins.allOf]
     }).then((res) => {
-      expect(res.errors[0].message).toEqual('Elements in allOf must be objects')
-      expect(res.errors[0].fullPath).toEqual(['allOf'])
+      expect(res.errors[0].message).toEqual("Elements in allOf must be objects")
+      expect(res.errors[0].fullPath).toEqual(["allOf"])
       expect(res.spec).toEqual({one: 1})
     })
   })
 
-  test('should merge allOf items, deeply', () => {
+  test("should merge allOf items, deeply", () => {
     return mapSpec({
       spec: {
         allOf: [
@@ -273,7 +273,7 @@ describe('allOf', () => {
     })
   })
 
-  test('should resolve nested allOf', () => {
+  test("should resolve nested allOf", () => {
     return mapSpec({
       spec: {
         allOf: [
@@ -311,8 +311,8 @@ describe('allOf', () => {
     })
   })
 
-  test('should handle external $refs inside allOf', () => {
-    xmock().get('http://example.com', (req, res) => {
+  test("should handle external $refs inside allOf", () => {
+    xmock().get("http://example.com", (req, res) => {
       setTimeout(() => res.send({fromRemote: true}), 20)
     })
 
@@ -320,7 +320,7 @@ describe('allOf', () => {
       plugins: [plugins.refs, plugins.allOf],
       spec: {
         allOf: [
-          {$ref: 'http://example.com/'},
+          {$ref: "http://example.com/"},
           {fromLocal: true}
         ]
       }
@@ -333,28 +333,28 @@ describe('allOf', () => {
     })
   })
 
-  test('should suppport nested allOfs with $refs', () => {
+  test("should suppport nested allOfs with $refs", () => {
     return mapSpec({
       plugins: [plugins.refs, plugins.allOf],
       spec: {
         definitions: {
           Alpha: {
-            allOf: [{type: 'object'}],
+            allOf: [{type: "object"}],
             properties: {
               one: {
-                $ref: '#/definitions/Bravo'
+                $ref: "#/definitions/Bravo"
               },
               two: {
-                type: 'string'
+                type: "string"
               }
             }
           },
           Bravo: {
             allOf: [{
-              type: 'object',
+              type: "object",
               properties: {
                 three: {
-                  type: 'string'
+                  type: "string"
                 }
               }
             }]
@@ -368,26 +368,26 @@ describe('allOf', () => {
       expect(res.spec).toEqual({
         definitions: {
           Alpha: {
-            type: 'object',
+            type: "object",
             properties: {
               one: {
-                type: 'object',
+                type: "object",
                 properties: {
                   three: {
-                    type: 'string',
+                    type: "string",
                   }
                 }
               },
               two: {
-                type: 'string'
+                type: "string"
               }
             }
           },
           Bravo: {
-            type: 'object',
+            type: "object",
             properties: {
               three: {
-                type: 'string'
+                type: "string"
               }
             }
           }
@@ -395,7 +395,7 @@ describe('allOf', () => {
       })
     })
   })
-  test('merges arrays inside of an `allOf`', () => {
+  test("merges arrays inside of an `allOf`", () => {
     return mapSpec({
       plugins: [plugins.refs, plugins.allOf],
       showDebug: true,
@@ -404,19 +404,19 @@ describe('allOf', () => {
           one: {
             allOf: [
               {
-                $ref: '#/definitions/two'
+                $ref: "#/definitions/two"
               },
               {
-                type: 'object',
-                required: ['a', 'b']
+                type: "object",
+                required: ["a", "b"]
               }
             ]
           },
           two: {
             allOf: [
               {
-                type: 'object',
-                required: ['c', 'd']
+                type: "object",
+                required: ["c", "d"]
               }
             ]
           }
@@ -427,12 +427,12 @@ describe('allOf', () => {
       expect(res.spec).toEqual({
         definitions: {
           one: {
-            type: 'object',
-            required: ['c', 'd', 'a', 'b']
+            type: "object",
+            required: ["c", "d", "a", "b"]
           },
           two: {
-            type: 'object',
-            required: ['c', 'd']
+            type: "object",
+            required: ["c", "d"]
           }
         },
       })
@@ -440,7 +440,7 @@ describe('allOf', () => {
   })
 
   test(
-    'should handle case, with an `allOf` referencing an `allOf` ',
+    "should handle case, with an `allOf` referencing an `allOf` ",
     () => {
       return mapSpec({
         plugins: [plugins.refs, plugins.allOf],
@@ -450,17 +450,17 @@ describe('allOf', () => {
             one: {
               allOf: [
                 {
-                  $ref: '#/definitions/two'
+                  $ref: "#/definitions/two"
                 },
                 {
-                  type: 'object'
+                  type: "object"
                 }
               ]
             },
             two: {
               allOf: [
                 {
-                  type: 'object'
+                  type: "object"
                 }
               ]
             }
@@ -471,10 +471,10 @@ describe('allOf', () => {
         expect(res.spec).toEqual({
           definitions: {
             one: {
-              type: 'object',
+              type: "object",
             },
             two: {
-              type: 'object',
+              type: "object",
             }
           },
         })

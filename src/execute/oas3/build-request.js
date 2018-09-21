@@ -1,9 +1,9 @@
 // This function runs after the common function,
 // `src/execute/index.js#buildRequest`
-import assign from 'lodash/assign'
-import get from 'lodash/get'
-import btoa from 'btoa'
-import {Buffer} from 'buffer/'
+import assign from "lodash/assign"
+import get from "lodash/get"
+import btoa from "btoa"
+import {Buffer} from "buffer/"
 
 export default function (options, req) {
   const {
@@ -30,18 +30,18 @@ export default function (options, req) {
     // does the passed requestContentType appear in the requestBody definition?
 
     if (requestContentType && isExplicitContentTypeValid) {
-      req.headers['Content-Type'] = requestContentType
+      req.headers["Content-Type"] = requestContentType
     }
     else if (!requestContentType) {
       const firstMediaType = requestBodyMediaTypes[0]
       if (firstMediaType) {
-        req.headers['Content-Type'] = firstMediaType
+        req.headers["Content-Type"] = firstMediaType
         requestContentType = firstMediaType
       }
     }
   }
   else if (requestContentType && isExplicitContentTypeValid) {
-    req.headers['Content-Type'] = requestContentType
+    req.headers["Content-Type"] = requestContentType
   }
 
   // for OAS3: add requestBody to request
@@ -50,8 +50,8 @@ export default function (options, req) {
       if (requestBodyMediaTypes.indexOf(requestContentType) > -1) {
         // only attach body if the requestBody has a definition for the
         // contentType that has been explicitly set
-        if (requestContentType === 'application/x-www-form-urlencoded' || requestContentType.indexOf('multipart/') === 0) {
-          if (typeof requestBody === 'object') {
+        if (requestContentType === "application/x-www-form-urlencoded" || requestContentType.indexOf("multipart/") === 0) {
+          if (typeof requestBody === "object") {
             req.form = {}
             Object.keys(requestBody).forEach((k) => {
               const val = requestBody[k]
@@ -59,19 +59,19 @@ export default function (options, req) {
 
               let isFile
 
-              if (typeof File !== 'undefined') {
+              if (typeof File !== "undefined") {
                 isFile = val instanceof File // eslint-disable-line no-undef
               }
 
-              if (typeof Blob !== 'undefined') {
+              if (typeof Blob !== "undefined") {
                 isFile = isFile || val instanceof Blob // eslint-disable-line no-undef
               }
 
-              if (typeof Buffer !== 'undefined') {
+              if (typeof Buffer !== "undefined") {
                 isFile = isFile || Buffer.isBuffer(val)
               }
 
-              if (typeof val === 'object' && !isFile) {
+              if (typeof val === "object" && !isFile) {
                 if (Array.isArray(val)) {
                   newVal = val.toString()
                 }
@@ -112,7 +112,7 @@ export function applySecurities({request, securities = {}, operation = {}, spec}
   const {authorized = {}} = securities
   const security = operation.security || spec.security || []
   const isAuthorized = authorized && !!Object.keys(authorized).length
-  const securityDef = get(spec, ['components', 'securitySchemes']) || {}
+  const securityDef = get(spec, ["components", "securitySchemes"]) || {}
 
   result.headers = result.headers || {}
   result.query = result.query || {}
@@ -135,35 +135,35 @@ export function applySecurities({request, securities = {}, operation = {}, spec}
       const {type} = schema
 
       if (auth) {
-        if (type === 'apiKey') {
-          if (schema.in === 'query') {
+        if (type === "apiKey") {
+          if (schema.in === "query") {
             result.query[schema.name] = value
           }
-          if (schema.in === 'header') {
+          if (schema.in === "header") {
             result.headers[schema.name] = value
           }
-          if (schema.in === 'cookie') {
+          if (schema.in === "cookie") {
             result.cookies[schema.name] = value
           }
         }
-        else if (type === 'http') {
-          if (schema.scheme === 'basic') {
+        else if (type === "http") {
+          if (schema.scheme === "basic") {
             const {username, password} = value
             const encoded = btoa(`${username}:${password}`)
             result.headers.Authorization = `Basic ${encoded}`
           }
 
-          if (schema.scheme === 'bearer') {
+          if (schema.scheme === "bearer") {
             result.headers.Authorization = `Bearer ${value}`
           }
         }
-        else if (type === 'oauth2') {
+        else if (type === "oauth2") {
           const token = auth.token || {}
           const accessToken = token.access_token
           let tokenType = token.token_type
 
-          if (!tokenType || tokenType.toLowerCase() === 'bearer') {
-            tokenType = 'Bearer'
+          if (!tokenType || tokenType.toLowerCase() === "bearer") {
+            tokenType = "Bearer"
           }
 
           result.headers.Authorization = `${tokenType} ${accessToken}`

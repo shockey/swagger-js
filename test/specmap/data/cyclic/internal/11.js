@@ -1,15 +1,15 @@
 module.exports = {
-  name: 'point to a node that eventually points to its ancestor',
+  name: "point to a node that eventually points to its ancestor",
   spec: {
     a: {
       b: {
-        $ref: '#/c'
+        $ref: "#/c"
       }
     },
     c: {
       d: {
         e: {
-          $ref: '#/c/d'
+          $ref: "#/c/d"
         }
       }
     }
@@ -19,7 +19,7 @@ module.exports = {
       b: {
         d: {
           e: {
-            $ref: '#/c/d'
+            $ref: "#/c/d"
           }
         }
       }
@@ -27,7 +27,7 @@ module.exports = {
     c: {
       d: {
         e: {
-          $ref: '#/c/d'
+          $ref: "#/c/d"
         }
       }
     }

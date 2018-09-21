@@ -1,19 +1,19 @@
-import find from 'lodash/find'
+import find from "lodash/find"
 
-import lib from './lib'
-import refs from './lib/refs'
-import allOf from './lib/all-of'
-import parameters from './lib/parameters'
-import properties from './lib/properties'
-import ContextTree from './lib/context-tree'
+import lib from "./lib"
+import refs from "./lib/refs"
+import allOf from "./lib/all-of"
+import parameters from "./lib/parameters"
+import properties from "./lib/properties"
+import ContextTree from "./lib/context-tree"
 
 const HARD_LIMIT = 100
 
 class SpecMap {
   constructor(opts) {
     Object.assign(this, {
-      spec: '',
-      debugLevel: 'info',
+      spec: "",
+      debugLevel: "info",
       plugins: [],
       pluginHistory: {},
       errors: [],
@@ -25,7 +25,7 @@ class SpecMap {
       contextTree: new ContextTree(),
       showDebug: false,
       allPatches: [], // only populated if showDebug is true
-      pluginProp: 'specMap',
+      pluginProp: "specMap",
       libMethods: Object.assign(Object.create(this), lib),
       allowMetaPatches: false,
     }, opts)
@@ -52,7 +52,7 @@ class SpecMap {
   }
 
   verbose(header, ...args) {
-    if (this.debugLevel === 'verbose') {
+    if (this.debugLevel === "verbose") {
       console.log(`[${header}]   `, ...args) // eslint-disable-line no-console
     }
   }
@@ -109,8 +109,8 @@ class SpecMap {
           else {
             const parentIndex = path.length - 1
             const parent = path[parentIndex]
-            const indexOfFirstProperties = path.indexOf('properties')
-            const isRootProperties = parent === 'properties' && parentIndex === indexOfFirstProperties
+            const indexOfFirstProperties = path.indexOf("properties")
+            const isRootProperties = parent === "properties" && parentIndex === indexOfFirstProperties
             const traversed = specmap.allowMetaPatches && refCache[obj.$$ref]
 
             for (const key of Object.keys(obj)) {
@@ -173,7 +173,7 @@ class SpecMap {
 
   getPluginMutationIndex(plugin) {
     const mi = this.getPluginHistoryTip(plugin).mutationIndex
-    return typeof mi !== 'number' ? -1 : mi
+    return typeof mi !== "number" ? -1 : mi
   }
 
   getPluginName(plugin) {
@@ -195,7 +195,7 @@ class SpecMap {
 
       try {
         if (!lib.isObject(patch)) {
-          this.debug('updatePatches', 'Got a non-object patch', patch)
+          this.debug("updatePatches", "Got a non-object patch", patch)
           return
         }
 
@@ -227,7 +227,7 @@ class SpecMap {
   }
 
   updateMutations(patch) {
-    if (typeof patch.value === 'object' && !Array.isArray(patch.value) && this.allowMetaPatches) {
+    if (typeof patch.value === "object" && !Array.isArray(patch.value) && this.allowMetaPatches) {
       patch.value = Object.assign({}, patch.value)
     }
 
@@ -241,7 +241,7 @@ class SpecMap {
   removePromisedPatch(patch) {
     const index = this.promisedPatches.indexOf(patch)
     if (index < 0) {
-      this.debug('Tried to remove a promisedPatch that isn\'t there!')
+      this.debug("Tried to remove a promisedPatch that isn't there!")
       return
     }
     this.promisedPatches.splice(index, 1)
@@ -263,7 +263,7 @@ class SpecMap {
 
   getMutations(from, to) {
     from = from || 0
-    if (typeof to !== 'number') {
+    if (typeof to !== "number") {
       to = this.mutations.length
     }
     return this.mutations.slice(from, to)

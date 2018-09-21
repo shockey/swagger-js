@@ -1,7 +1,7 @@
-import {isFreelyNamed} from '../helpers'
+import {isFreelyNamed} from "../helpers"
 
 export default {
-  key: 'allOf',
+  key: "allOf",
   plugin: (val, key, fullPath, specmap, patch) => {
     // Ignore replace patches created by $ref because the changes will
     // occur in the original "add" patch and we don't want this plugin
@@ -16,7 +16,7 @@ export default {
     }
 
     if (!Array.isArray(val)) {
-      const err = new TypeError('allOf must be an array')
+      const err = new TypeError("allOf must be an array")
       err.fullPath = fullPath // This is an array
       return err
     }
@@ -41,7 +41,7 @@ export default {
         }
         alreadyAddError = true
 
-        const err = new TypeError('Elements in allOf must be objects')
+        const err = new TypeError("Elements in allOf must be objects")
         err.fullPath = fullPath // This is an array
         return err
       }
@@ -55,7 +55,7 @@ export default {
     // If there was not an original $$ref value, make sure to remove
     // any $$ref value that may exist from the result of `allOf` merges
     if (!originalDefinitionObj.$$ref) {
-      allOfPatches.push(specmap.remove([].concat(parent, '$$ref')))
+      allOfPatches.push(specmap.remove([].concat(parent, "$$ref")))
     }
 
     return allOfPatches

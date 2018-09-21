@@ -1,13 +1,13 @@
-import cloneDeep from 'lodash/cloneDeep'
-import assign from 'lodash/assign'
-import startsWith from 'lodash/startsWith'
-import Url from 'url'
-import Http, {makeHttp, serializeRes, serializeHeaders} from './http'
-import Resolver, {clearCache} from './resolver'
-import resolveSubtree from './subtree-resolver'
-import {makeApisTagOperation} from './interfaces'
-import {execute, buildRequest, PARAMETER_BUILDERS} from './execute'
-import {opId} from './helpers'
+import cloneDeep from "lodash/cloneDeep"
+import assign from "lodash/assign"
+import startsWith from "lodash/startsWith"
+import Url from "url"
+import Http, {makeHttp, serializeRes, serializeHeaders} from "./http"
+import Resolver, {clearCache} from "./resolver"
+import resolveSubtree from "./subtree-resolver"
+import {makeApisTagOperation} from "./interfaces"
+import {execute, buildRequest, PARAMETER_BUILDERS} from "./execute"
+import {opId} from "./helpers"
 
 Swagger.http = Http
 Swagger.makeHttp = makeHttp.bind(null, Swagger.http)
@@ -24,7 +24,7 @@ Swagger.helpers = {opId}
 
 function Swagger(url, opts = {}) {
   // Allow url as a separate argument
-  if (typeof url === 'string') {
+  if (typeof url === "string") {
     opts.url = url
   }
   else {
@@ -61,7 +61,7 @@ Swagger.prototype = {
       spec: this.spec,
       http: this.http,
       securities: {authorized: this.authorizations},
-      contextUrl: typeof this.url === 'string' ? this.url : undefined,
+      contextUrl: typeof this.url === "string" ? this.url : undefined,
       ...argHash
     })
   },
@@ -86,16 +86,16 @@ Swagger.prototype.applyDefaults = function () {
   const spec = this.spec
   const specUrl = this.url
   // TODO: OAS3: support servers here
-  if (specUrl && startsWith(specUrl, 'http')) {
+  if (specUrl && startsWith(specUrl, "http")) {
     const parsed = Url.parse(specUrl)
     if (!spec.host) {
       spec.host = parsed.host
     }
     if (!spec.schemes) {
-      spec.schemes = [parsed.protocol.replace(':', '')]
+      spec.schemes = [parsed.protocol.replace(":", "")]
     }
     if (!spec.basePath) {
-      spec.basePath = '/'
+      spec.basePath = "/"
     }
   }
 }

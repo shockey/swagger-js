@@ -31,7 +31,7 @@ function formDataBuilder({req, value, parameter}) {
 // Add a header to the request
 function headerBuilder({req, parameter, value}) {
   req.headers = req.headers || {}
-  if (typeof value !== 'undefined') {
+  if (typeof value !== "undefined") {
     req.headers[parameter.name] = value
   }
 }
@@ -45,12 +45,12 @@ function pathBuilder({req, value, parameter}) {
 function queryBuilder({req, value, parameter}) {
   req.query = req.query || {}
 
-  if (value === false && parameter.type === 'boolean') {
-    value = 'false'
+  if (value === false && parameter.type === "boolean") {
+    value = "false"
   }
 
-  if (value === 0 && ['number', 'integer'].indexOf(parameter.type) > -1) {
-    value = '0'
+  if (value === 0 && ["number", "integer"].indexOf(parameter.type) > -1) {
+    value = "0"
   }
 
   if (value) {

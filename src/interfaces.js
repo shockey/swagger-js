@@ -1,5 +1,5 @@
-import pick from 'lodash/pick'
-import {eachOperation, opId} from './helpers'
+import pick from "lodash/pick"
+import {eachOperation, opId} from "./helpers"
 
 const nullFn = () => null
 
@@ -18,7 +18,7 @@ export function makeExecute(swaggerJs = {}) {
   return ({pathName, method, operationId}) => (parameters, opts = {}) => {
     return swaggerJs.execute({
       spec: swaggerJs.spec,
-      ...pick(swaggerJs, 'requestInterceptor', 'responseInterceptor', 'userFetch'),
+      ...pick(swaggerJs, "requestInterceptor", "responseInterceptor", "userFetch"),
       pathName,
       method,
       parameters,
@@ -75,14 +75,14 @@ export function makeApisTagOperation(swaggerJs = {}) {
  * `defaultTag` will house all non-tagged operations
  *
  */
-export function mapTagOperations({spec, cb = nullFn, defaultTag = 'default', v2OperationIdCompatibilityMode}) {
+export function mapTagOperations({spec, cb = nullFn, defaultTag = "default", v2OperationIdCompatibilityMode}) {
   const operationIdCounter = {}
   const tagOperations = {} // Will house all tags + operations
   eachOperation(spec, ({pathName, method, operation}) => {
     const tags = operation.tags ? normalizeArray(operation.tags) : [defaultTag]
 
     tags.forEach((tag) => {
-      if (typeof tag !== 'string') {
+      if (typeof tag !== "string") {
         return
       }
       const tagObj = tagOperations[tag] = tagOperations[tag] || {}
@@ -93,7 +93,7 @@ export function mapTagOperations({spec, cb = nullFn, defaultTag = 'default', v2O
         operationIdCounter[id]++
         tagObj[`${id}${operationIdCounter[id]}`] = cbResult
       }
-      else if (typeof tagObj[id] !== 'undefined') {
+      else if (typeof tagObj[id] !== "undefined") {
         // Bump counter ( for this operationId )
         const originalCounterValue = (operationIdCounter[id] || 1)
         operationIdCounter[id] = originalCounterValue + 1

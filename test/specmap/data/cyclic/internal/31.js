@@ -1,19 +1,19 @@
 module.exports = {
-  name: 'two point to a cyclic node',
+  name: "two point to a cyclic node",
   spec: {
     a: {
       b: {
-        $ref: '#/e'
+        $ref: "#/e"
       }
     },
     c: {
       d: {
-        $ref: '#/e'
+        $ref: "#/e"
       }
     },
     e: {
       f: {
-        $ref: '#/e/f'
+        $ref: "#/e/f"
       }
     }
   },
@@ -21,20 +21,20 @@ module.exports = {
     a: {
       b: {
         f: {
-          $ref: '#/e/f'
+          $ref: "#/e/f"
         }
       }
     },
     c: {
       d: {
         f: {
-          $ref: '#/e/f'
+          $ref: "#/e/f"
         }
       }
     },
     e: {
       f: {
-        $ref: '#/e/f'
+        $ref: "#/e/f"
       }
     }
   }

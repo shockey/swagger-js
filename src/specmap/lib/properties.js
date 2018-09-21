@@ -1,7 +1,7 @@
-import lib from '../lib'
+import lib from "../lib"
 
 export default {
-  key: 'properties',
+  key: "properties",
   plugin: (properties, key, fullPath, specmap) => {
     const val = Object.assign({}, properties)
 

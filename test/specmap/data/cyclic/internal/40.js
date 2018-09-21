@@ -1,23 +1,23 @@
 module.exports = {
-  name: '3-node cycle in array',
+  name: "3-node cycle in array",
   spec: {
     a: {
-      $ref: '#/defs/0'
+      $ref: "#/defs/0"
     },
     defs: [
       {
         d1k: {
-          $ref: '#/defs/1'
+          $ref: "#/defs/1"
         }
       },
       {
         d2k: {
-          $ref: '#/defs/2'
+          $ref: "#/defs/2"
         }
       },
       {
         d3k: {
-          $ref: '#/defs/0'
+          $ref: "#/defs/0"
         }
       }
     ]
@@ -27,7 +27,7 @@ module.exports = {
       d1k: {
         d2k: {
           d3k: {
-            $ref: '#/defs/0'
+            $ref: "#/defs/0"
           }
         }
       }
@@ -37,7 +37,7 @@ module.exports = {
         d1k: {
           d2k: {
             d3k: {
-              $ref: '#/defs/0'
+              $ref: "#/defs/0"
             }
           }
         }
@@ -45,13 +45,13 @@ module.exports = {
       {
         d2k: {
           d3k: {
-            $ref: '#/defs/0'
+            $ref: "#/defs/0"
           }
         }
       },
       {
         d3k: {
-          $ref: '#/defs/0'
+          $ref: "#/defs/0"
         }
       }
     ]

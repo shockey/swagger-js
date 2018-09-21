@@ -1,14 +1,14 @@
-import xmock from 'xmock'
-import mapSpec, {plugins} from '../../src/specmap'
+import xmock from "xmock"
+import mapSpec, {plugins} from "../../src/specmap"
 
-describe('properties', () => {
+describe("properties", () => {
   afterEach(() => {
     xmock().restore()
   })
 
-  test('should add default value to each property', () => {
+  test("should add default value to each property", () => {
     const modelPropertyMacro = function (model) {
-      return 'test'
+      return "test"
     }
 
     return mapSpec({
@@ -26,10 +26,10 @@ describe('properties', () => {
         spec: {
           properties: {
             one: {
-              default: 'test'
+              default: "test"
             },
             two: {
-              default: 'test'
+              default: "test"
             }
           }
         }
@@ -38,7 +38,7 @@ describe('properties', () => {
   })
 
   test(
-    'should add default value to each property taking to account first parameter (property) passed in modelPropertyMacro',
+    "should add default value to each property taking to account first parameter (property) passed in modelPropertyMacro",
     () => {
       const modelPropertyMacro = function (prop) {
         return prop.test

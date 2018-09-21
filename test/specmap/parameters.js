@@ -1,14 +1,14 @@
-import xmock from 'xmock'
-import mapSpec, {plugins} from '../../src/specmap'
+import xmock from "xmock"
+import mapSpec, {plugins} from "../../src/specmap"
 
-describe('parameters', () => {
+describe("parameters", () => {
   afterEach(() => {
     xmock().restore()
   })
 
-  test('should add default value to parameter', () => {
+  test("should add default value to parameter", () => {
     const parameterMacro = function (operation, parameter) {
-      return 'test'
+      return "test"
     }
 
     return mapSpec({
@@ -27,11 +27,11 @@ describe('parameters', () => {
           parameters: [
             {
               one: 1,
-              default: 'test'
+              default: "test"
             },
             {
               two: 2,
-              default: 'test'
+              default: "test"
             }
           ]
         }
@@ -40,7 +40,7 @@ describe('parameters', () => {
   })
 
   test(
-    'should add default value to parameter taking to account first parameter (operation) passed in parameterMacro',
+    "should add default value to parameter taking to account first parameter (operation) passed in parameterMacro",
     () => {
       const parameterMacro = function (operation, parameter) {
         return operation.test
@@ -49,7 +49,7 @@ describe('parameters', () => {
       return mapSpec({
         spec: {
           test: {
-            test: 'pet',
+            test: "pet",
             parameters: [
                 {one: 1},
                 {two: 2}
@@ -63,15 +63,15 @@ describe('parameters', () => {
           errors: [],
           spec: {
             test: {
-              test: 'pet',
+              test: "pet",
               parameters: [
                 {
                   one: 1,
-                  default: 'pet'
+                  default: "pet"
                 },
                 {
                   two: 2,
-                  default: 'pet'
+                  default: "pet"
                 }
               ]
             }
@@ -82,7 +82,7 @@ describe('parameters', () => {
   )
 
   test(
-    'should add default value to parameter taking to account second parameter (parameter itself) passed in parameterMacro',
+    "should add default value to parameter taking to account second parameter (parameter itself) passed in parameterMacro",
     () => {
       const parameterMacro = function (operation, parameter) {
         return parameter.test

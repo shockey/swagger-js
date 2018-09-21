@@ -1,14 +1,14 @@
-import {fetch} from 'cross-fetch'
-import jsYaml from '@kyleshockey/js-yaml'
-import qs from 'querystring-browser'
-import url from 'url'
-import lib from '../lib'
-import createError from '../lib/create-error'
-import {isFreelyNamed} from '../helpers'
+import {fetch} from "cross-fetch"
+import jsYaml from "@kyleshockey/js-yaml"
+import qs from "querystring-browser"
+import url from "url"
+import lib from "../lib"
+import createError from "../lib/create-error"
+import {isFreelyNamed} from "../helpers"
 
-const ABSOLUTE_URL_REGEXP = new RegExp('^([a-z]+://|//)', 'i')
+const ABSOLUTE_URL_REGEXP = new RegExp("^([a-z]+://|//)", "i")
 
-const JSONRefError = createError('JSONRefError', function (message, extra, oriError) {
+const JSONRefError = createError("JSONRefError", function (message, extra, oriError) {
   this.originalError = oriError
   Object.assign(this, extra || {})
 })
@@ -41,7 +41,7 @@ const specmapRefs = new WeakMap()
  *   b: $ref-a
  */
 const plugin = {
-  key: '$ref',
+  key: "$ref",
   plugin: (ref, key, fullPath, specmap) => {
     const parent = fullPath.slice(0, -1)
     if (isFreelyNamed(parent)) {
@@ -49,8 +49,8 @@ const plugin = {
     }
 
     const baseDoc = specmap.getContext(fullPath).baseDoc
-    if (typeof ref !== 'string') {
-      return new JSONRefError('$ref: must be a string (JSON-Ref)', {
+    if (typeof ref !== "string") {
+      return new JSONRefError("$ref: must be a string (JSON-Ref)", {
         $ref: ref,
         baseDoc,
         fullPath,
@@ -59,7 +59,7 @@ const plugin = {
 
     const splitString = split(ref)
     const refPath = splitString[0]
-    const pointer = splitString[1] || ''
+    const pointer = splitString[1] || ""
 
     let basePath
     try {
@@ -85,7 +85,7 @@ const plugin = {
       tokens = jsonPointerToArray(pointer)
       promOrVal = specmap.get(tokens)
 
-      if (typeof promOrVal === 'undefined') {
+      if (typeof promOrVal === "undefined") {
         promOrVal = new JSONRefError(`Could not resolve reference: ${ref}`, {
           pointer,
           $ref: ref,
@@ -192,7 +192,7 @@ function wrapError(e, extra) {
  * @api public
  */
 function split(ref) {
-  return (ref + '').split('#') // eslint-disable-line prefer-template
+  return (ref + "").split("#") // eslint-disable-line prefer-template
 }
 
 /**
@@ -229,7 +229,7 @@ function extractFromDoc(docPath, pointer) {
  * @api public
  */
 function clearCache(item) {
-  if (typeof item !== 'undefined') {
+  if (typeof item !== "undefined") {
     delete docCache[item]
   }
   else {
@@ -267,7 +267,7 @@ function getDoc(docPath) {
  * @api public
  */
 function fetchJSON(docPath) {
-  return fetch(docPath, {headers: {Accept: 'application/json, application/yaml'}, loadSpec: true})
+  return fetch(docPath, {headers: {Accept: "application/json, application/yaml"}, loadSpec: true})
     .then(res => res.text())
     .then(text => jsYaml.safeLoad(text))
 }
@@ -286,7 +286,7 @@ function extract(pointer, obj) {
   }
 
   const val = lib.getIn(obj, tokens)
-  if (typeof val === 'undefined') {
+  if (typeof val === "undefined") {
     throw new JSONRefError(`Could not resolve pointer: ${pointer} does not exist in document`, {pointer})
   }
   return val
@@ -297,19 +297,19 @@ function extract(pointer, obj) {
  * @api public
  */
 function jsonPointerToArray(pointer) {
-  if (typeof pointer !== 'string') {
+  if (typeof pointer !== "string") {
     throw new TypeError(`Expected a string, got a ${typeof pointer}`)
   }
 
-  if (pointer[0] === '/') {
+  if (pointer[0] === "/") {
     pointer = pointer.substr(1)
   }
 
-  if (pointer === '') {
+  if (pointer === "") {
     return []
   }
 
-  return pointer.split('/').map(unescapeJsonPointerToken)
+  return pointer.split("/").map(unescapeJsonPointerToken)
 }
 
 /**
@@ -317,10 +317,10 @@ function jsonPointerToArray(pointer) {
  * @api public
  */
 function unescapeJsonPointerToken(token) {
-  if (typeof token !== 'string') {
+  if (typeof token !== "string") {
     return token
   }
-  return qs.unescape(token.replace(/~1/g, '/').replace(/~0/g, '~'))
+  return qs.unescape(token.replace(/~1/g, "/").replace(/~0/g, "~"))
 }
 
 /**
@@ -328,18 +328,18 @@ function unescapeJsonPointerToken(token) {
  * @api public
  */
 function escapeJsonPointerToken(token) {
-  return qs.escape(token.replace(/~/g, '~0').replace(/\//g, '~1'))
+  return qs.escape(token.replace(/~/g, "~0").replace(/\//g, "~1"))
 }
 
 function arrayToJsonPointer(arr) {
   if (arr.length === 0) {
-    return ''
+    return ""
   }
 
-  return `/${arr.map(escapeJsonPointerToken).join('/')}`
+  return `/${arr.map(escapeJsonPointerToken).join("/")}`
 }
 
-const pointerBoundaryChar = c => !c || c === '/' || c === '#'
+const pointerBoundaryChar = c => !c || c === "/" || c === "#"
 
 function pointerIsAParent(pointer, parentPointer) {
   if (pointerBoundaryChar(parentPointer)) {
@@ -350,8 +350,8 @@ function pointerIsAParent(pointer, parentPointer) {
   const lastParentChar = parentPointer.slice(-1)
 
   return pointer.indexOf(parentPointer) === 0
-    && (!nextChar || nextChar === '/' || nextChar === '#')
-    && lastParentChar !== '#'
+    && (!nextChar || nextChar === "/" || nextChar === "#")
+    && lastParentChar !== "#"
 }
 
 
@@ -372,7 +372,7 @@ function pointerAlreadyInPath(pointer, basePath, parent, specmap) {
   }
 
   const parentPointer = arrayToJsonPointer(parent)
-  const fullyQualifiedPointer = `${basePath || '<specmap-base>'}#${pointer}`
+  const fullyQualifiedPointer = `${basePath || "<specmap-base>"}#${pointer}`
 
   // Case 1: direct cycle, e.g. a.b.c.$ref: '/a.b'
   // Detect by checking that the parent path doesn't start with pointer.
@@ -388,7 +388,7 @@ function pointerAlreadyInPath(pointer, basePath, parent, specmap) {
   //  ex2: a.$ref: '/b/c'  &  b.c.$ref: '/b'
   // Detect by retrieving all the $refs along the path of parent
   // and checking if any starts with pointer or vice versa.
-  let currPath = ''
+  let currPath = ""
   const hasIndirectCycle = parent.some((token) => {
     currPath = `${currPath}/${escapeJsonPointerToken(token)}`
     return refs[currPath] && refs[currPath].some((ref) => {

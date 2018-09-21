@@ -1,15 +1,15 @@
 module.exports = {
-  name: 'cycle among 2 nodes',
+  name: "cycle among 2 nodes",
   spec: {
     a: {
       b: {
-        $ref: '#/c'
+        $ref: "#/c"
       }
     },
     c: {
       d: {
         e: {
-          $ref: '#/a'
+          $ref: "#/a"
         }
       }
     }
@@ -19,7 +19,7 @@ module.exports = {
       b: {
         d: {
           e: {
-            $ref: '#/a'
+            $ref: "#/a"
           }
         }
       }
@@ -27,7 +27,7 @@ module.exports = {
     c: {
       d: {
         e: {
-          $ref: '#/a'
+          $ref: "#/a"
         }
       }
     }

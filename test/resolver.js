@@ -1,11 +1,11 @@
-import xmock from 'xmock'
-import path from 'path'
-import fs from 'fs'
-import jsYaml from '@kyleshockey/js-yaml'
+import xmock from "xmock"
+import path from "path"
+import fs from "fs"
+import jsYaml from "@kyleshockey/js-yaml"
 
-import Swagger from '../src'
+import Swagger from "../src"
 
-describe('resolver', () => {
+describe("resolver", () => {
   afterEach(() => {
     // Restore all xhr/http mocks
     xmock().restore()
@@ -13,16 +13,16 @@ describe('resolver', () => {
     Swagger.clearCache()
   })
 
-  test('should expose a resolver function', () => {
+  test("should expose a resolver function", () => {
     expect(Swagger.resolve).toBeInstanceOf(Function)
   })
 
-  test('should be able to resolve simple $refs', () => {
+  test("should be able to resolve simple $refs", () => {
     // Given
     const spec = {
       one: {
         uno: 1,
-        $ref: '#/two'
+        $ref: "#/two"
       },
       two: {
         duos: 2
@@ -47,14 +47,14 @@ describe('resolver', () => {
     }
   })
 
-  test('should be able to resolve $refs with percent-encoded values', () => {
+  test("should be able to resolve $refs with percent-encoded values", () => {
     // Given
     const spec = {
       one: {
         uno: 1,
-        $ref: '#/value%20two'
+        $ref: "#/value%20two"
       },
-      'value two': {
+      "value two": {
         duos: 2
       }
     }
@@ -70,7 +70,7 @@ describe('resolver', () => {
         one: {
           duos: 2
         },
-        'value two': {
+        "value two": {
           duos: 2
         }
       })
@@ -78,7 +78,7 @@ describe('resolver', () => {
   })
 
   test(
-    'should tolerate $refs with raw values that should be percent-encoded',
+    "should tolerate $refs with raw values that should be percent-encoded",
     () => {
       // NOTE: this is for compatibility and can be removed in the next major
       // REVIEW for v4
@@ -87,9 +87,9 @@ describe('resolver', () => {
       const spec = {
         one: {
           uno: 1,
-          $ref: '#/value two'
+          $ref: "#/value two"
         },
-        'value two': {
+        "value two": {
           duos: 2
         }
       }
@@ -105,7 +105,7 @@ describe('resolver', () => {
           one: {
             duos: 2
           },
-          'value two': {
+          "value two": {
             duos: 2
           }
         })
@@ -114,27 +114,27 @@ describe('resolver', () => {
   )
 
   test(
-    'should be able to resolve circular $refs when a baseDoc is provided',
+    "should be able to resolve circular $refs when a baseDoc is provided",
     () => {
       // Given
       const spec = {
         one: {
-          $ref: '#/two'
+          $ref: "#/two"
         },
         two: {
           a: {
-            $ref: '#/three'
+            $ref: "#/three"
           }
         },
         three: {
           b: {
-            $ref: '#/two'
+            $ref: "#/two"
           }
         }
       }
 
       // When
-      return Swagger.resolve({spec, baseDoc: 'http://example.com/swagger.json', allowMetaPatches: false})
+      return Swagger.resolve({spec, baseDoc: "http://example.com/swagger.json", allowMetaPatches: false})
         .then(handleResponse)
 
       // Then
@@ -144,19 +144,19 @@ describe('resolver', () => {
           one: {
             a: {
               b: {
-                $ref: '#/two'
+                $ref: "#/two"
               }
             }
           },
           three: {
             b: {
-              $ref: '#/two'
+              $ref: "#/two"
             }
           },
           two: {
             a: {
               b: {
-                $ref: '#/two'
+                $ref: "#/two"
               }
             }
           }
@@ -165,30 +165,30 @@ describe('resolver', () => {
     }
   )
 
-  test('should resolve this edge case of allOf + items + deep $refs', () => {
+  test("should resolve this edge case of allOf + items + deep $refs", () => {
     // Given
     const spec = {
       definitions: {
         First: {
           allOf: [
             {
-              $ref: '#/definitions/Second'
+              $ref: "#/definitions/Second"
             }
           ]
         },
         Second: {
           allOf: [
             {
-              $ref: '#/definitions/Third'
+              $ref: "#/definitions/Third"
             }
           ]
         },
         Third: {
           properties: {
             children: {
-              type: 'array',
+              type: "array",
               items: {
-                $ref: '#/definitions/Third'
+                $ref: "#/definitions/Third"
               }
             }
           }
@@ -206,9 +206,9 @@ describe('resolver', () => {
     }
   })
 
-  test('should resolve the url, if no spec provided', () => {
+  test("should resolve the url, if no spec provided", () => {
     // Given
-    const url = 'http://example.com/swagger.json'
+    const url = "http://example.com/swagger.json"
     xmock().get(url, (req, res) => res.send({one: 1}))
 
     // When
@@ -224,7 +224,7 @@ describe('resolver', () => {
     }
   })
 
-  test('should be able to resolve simple allOf', () => {
+  test("should be able to resolve simple allOf", () => {
     // Given
     const spec = {
       allOf: [
@@ -247,7 +247,7 @@ describe('resolver', () => {
     }
   })
 
-  test('should be able to resolve simple allOf', () => {
+  test("should be able to resolve simple allOf", () => {
     // Given
     const spec = {
       allOf: [
@@ -270,35 +270,35 @@ describe('resolver', () => {
     }
   })
 
-  test('should be able to resolve complex allOf', () => {
+  test("should be able to resolve complex allOf", () => {
     // Given
     const spec = {
       definitions: {
         Simple1: {
-          type: 'object',
+          type: "object",
           properties: {
             id1: {
-              type: 'integer',
-              format: 'int64'
+              type: "integer",
+              format: "int64"
             }
           }
         },
         Simple2: {
-          type: 'object',
+          type: "object",
           properties: {
             id2: {
-              type: 'integer',
-              format: 'int64'
+              type: "integer",
+              format: "int64"
             }
           }
         },
         Composed: {
           allOf: [
             {
-              $ref: '#/definitions/Simple1'
+              $ref: "#/definitions/Simple1"
             },
             {
-              $ref: '#/definitions/Simple2'
+              $ref: "#/definitions/Simple2"
             }
           ]
         }
@@ -315,33 +315,33 @@ describe('resolver', () => {
       expect(obj.spec).toEqual({
         definitions: {
           Simple1: {
-            type: 'object',
+            type: "object",
             properties: {
               id1: {
-                type: 'integer',
-                format: 'int64'
+                type: "integer",
+                format: "int64"
               }
             }
           },
           Simple2: {
-            type: 'object',
+            type: "object",
             properties: {
               id2: {
-                type: 'integer',
-                format: 'int64'
+                type: "integer",
+                format: "int64"
               }
             }
           },
           Composed: {
-            type: 'object',
+            type: "object",
             properties: {
               id1: {
-                type: 'integer',
-                format: 'int64'
+                type: "integer",
+                format: "int64"
               },
               id2: {
-                type: 'integer',
-                format: 'int64'
+                type: "integer",
+                format: "int64"
               }
             }
           }
@@ -350,33 +350,33 @@ describe('resolver', () => {
     }
   })
 
-  describe('complex allOf+$ref', () => {
-    test('should be able to resolve without meta patches', () => {
+  describe("complex allOf+$ref", () => {
+    test("should be able to resolve without meta patches", () => {
       // Given
       const spec = {
         components: {
           schemas: {
             Error: {
-              type: 'object',
+              type: "object",
               properties: {
                 message: {
-                  type: 'string'
+                  type: "string"
                 }
               }
             },
             UnauthorizedError: {
               allOf: [
                 {
-                  $ref: '#/components/schemas/Error'
+                  $ref: "#/components/schemas/Error"
                 },
                 {
-                  type: 'object',
+                  type: "object",
                   properties: {
                     code: {
                       example: 401
                     },
                     message: {
-                      example: 'Unauthorized'
+                      example: "Unauthorized"
                     }
                   }
                 }
@@ -385,16 +385,16 @@ describe('resolver', () => {
             NotFoundError: {
               allOf: [
                 {
-                  $ref: '#/components/schemas/Error'
+                  $ref: "#/components/schemas/Error"
                 },
                 {
-                  type: 'object',
+                  type: "object",
                   properties: {
                     code: {
                       example: 404
                     },
                     message: {
-                      example: 'Resource Not Found'
+                      example: "Resource Not Found"
                     }
                   }
                 }
@@ -415,19 +415,19 @@ describe('resolver', () => {
           components: {
             schemas: {
               Error: {
-                type: 'object',
+                type: "object",
                 properties: {
                   message: {
-                    type: 'string'
+                    type: "string"
                   }
                 }
               },
               UnauthorizedError: {
-                type: 'object',
+                type: "object",
                 properties: {
                   message: {
-                    type: 'string',
-                    example: 'Unauthorized'
+                    type: "string",
+                    example: "Unauthorized"
 
                   },
                   code: {
@@ -436,14 +436,14 @@ describe('resolver', () => {
                 }
               },
               NotFoundError: {
-                type: 'object',
+                type: "object",
                 properties: {
                   code: {
                     example: 404
                   },
                   message: {
-                    type: 'string',
-                    example: 'Resource Not Found'
+                    type: "string",
+                    example: "Resource Not Found"
                   }
                 }
               }
@@ -452,32 +452,32 @@ describe('resolver', () => {
         })
       }
     })
-    test('should be able to resolve with meta patches', () => {
+    test("should be able to resolve with meta patches", () => {
       // Given
       const spec = {
         components: {
           schemas: {
             Error: {
-              type: 'object',
+              type: "object",
               properties: {
                 message: {
-                  type: 'string'
+                  type: "string"
                 }
               }
             },
             UnauthorizedError: {
               allOf: [
                 {
-                  $ref: '#/components/schemas/Error'
+                  $ref: "#/components/schemas/Error"
                 },
                 {
-                  type: 'object',
+                  type: "object",
                   properties: {
                     code: {
                       example: 401
                     },
                     message: {
-                      example: 'Unauthorized'
+                      example: "Unauthorized"
                     }
                   }
                 }
@@ -486,16 +486,16 @@ describe('resolver', () => {
             NotFoundError: {
               allOf: [
                 {
-                  $ref: '#/components/schemas/Error'
+                  $ref: "#/components/schemas/Error"
                 },
                 {
-                  type: 'object',
+                  type: "object",
                   properties: {
                     code: {
                       example: 404
                     },
                     message: {
-                      example: 'Resource Not Found'
+                      example: "Resource Not Found"
                     }
                   }
                 }
@@ -516,19 +516,19 @@ describe('resolver', () => {
           components: {
             schemas: {
               Error: {
-                type: 'object',
+                type: "object",
                 properties: {
                   message: {
-                    type: 'string'
+                    type: "string"
                   }
                 }
               },
               UnauthorizedError: {
-                type: 'object',
+                type: "object",
                 properties: {
                   message: {
-                    type: 'string',
-                    example: 'Unauthorized'
+                    type: "string",
+                    example: "Unauthorized"
 
                   },
                   code: {
@@ -537,14 +537,14 @@ describe('resolver', () => {
                 }
               },
               NotFoundError: {
-                type: 'object',
+                type: "object",
                 properties: {
                   code: {
                     example: 404
                   },
                   message: {
-                    type: 'string',
-                    example: 'Resource Not Found'
+                    type: "string",
+                    example: "Resource Not Found"
                   }
                 }
               }
@@ -555,15 +555,15 @@ describe('resolver', () => {
     })
   })
 
-  describe('complex allOf+$ref+circular-reference', () => {
-    test('should be able to resolve without meta patches', async () => {
+  describe("complex allOf+$ref+circular-reference", () => {
+    test("should be able to resolve without meta patches", async () => {
       // Given
       const spec = {
-        swagger: '2.0',
+        swagger: "2.0",
         info: {
-          version: '0.2.1',
-          title: 'Resolver Issue, undefind of \'0\'',
-          description: 'Resolver issue'
+          version: "0.2.1",
+          title: "Resolver Issue, undefind of '0'",
+          description: "Resolver issue"
         },
         paths: {
         },
@@ -571,23 +571,23 @@ describe('resolver', () => {
           First: {
             allOf: [
               {
-                $ref: '#/definitions/Second'
+                $ref: "#/definitions/Second"
               }
             ]
           },
           Second: {
             allOf: [
               {
-                $ref: '#/definitions/Third'
+                $ref: "#/definitions/Third"
               }
             ]
           },
           Third: {
             properties: {
               children: {
-                type: 'array',
+                type: "array",
                 items: {
-                  $ref: '#/definitions/Third'
+                  $ref: "#/definitions/Third"
                 }
               }
             }
@@ -606,11 +606,11 @@ describe('resolver', () => {
       expect(result.errors).toEqual([])
       expect(result.spec).toEqual({
         $$normalized: true,
-        swagger: '2.0',
+        swagger: "2.0",
         info: {
-          version: '0.2.1',
-          title: 'Resolver Issue, undefind of \'0\'',
-          description: 'Resolver issue'
+          version: "0.2.1",
+          title: "Resolver Issue, undefind of '0'",
+          description: "Resolver issue"
         },
         paths: {
         },
@@ -618,9 +618,9 @@ describe('resolver', () => {
           First: {
             properties: {
               children: {
-                type: 'array',
+                type: "array",
                 items: {
-                  $ref: '#/definitions/Third'
+                  $ref: "#/definitions/Third"
                 }
               }
             }
@@ -628,9 +628,9 @@ describe('resolver', () => {
           Second: {
             properties: {
               children: {
-                type: 'array',
+                type: "array",
                 items: {
-                  $ref: '#/definitions/Third'
+                  $ref: "#/definitions/Third"
                 }
               }
             }
@@ -638,9 +638,9 @@ describe('resolver', () => {
           Third: {
             properties: {
               children: {
-                type: 'array',
+                type: "array",
                 items: {
-                  $ref: '#/definitions/Third'
+                  $ref: "#/definitions/Third"
                 }
               }
             }
@@ -648,14 +648,14 @@ describe('resolver', () => {
         }
       })
     })
-    test('should be able to resolve with meta patches', async () => {
+    test("should be able to resolve with meta patches", async () => {
       // Given
       const spec = {
-        swagger: '2.0',
+        swagger: "2.0",
         info: {
-          version: '0.2.1',
-          title: 'Resolver Issue, undefind of \'0\'',
-          description: 'Resolver issue'
+          version: "0.2.1",
+          title: "Resolver Issue, undefind of '0'",
+          description: "Resolver issue"
         },
         paths: {
         },
@@ -663,23 +663,23 @@ describe('resolver', () => {
           First: {
             allOf: [
               {
-                $ref: '#/definitions/Second'
+                $ref: "#/definitions/Second"
               }
             ]
           },
           Second: {
             allOf: [
               {
-                $ref: '#/definitions/Third'
+                $ref: "#/definitions/Third"
               }
             ]
           },
           Third: {
             properties: {
               children: {
-                type: 'array',
+                type: "array",
                 items: {
-                  $ref: '#/definitions/Third'
+                  $ref: "#/definitions/Third"
                 }
               }
             }
@@ -699,11 +699,11 @@ describe('resolver', () => {
       expect(result.errors).toEqual([])
       expect(result.spec).toEqual({
         $$normalized: true,
-        swagger: '2.0',
+        swagger: "2.0",
         info: {
-          version: '0.2.1',
-          title: 'Resolver Issue, undefind of \'0\'',
-          description: 'Resolver issue'
+          version: "0.2.1",
+          title: "Resolver Issue, undefind of '0'",
+          description: "Resolver issue"
         },
         paths: {
         },
@@ -711,9 +711,9 @@ describe('resolver', () => {
           First: {
             properties: {
               children: {
-                type: 'array',
+                type: "array",
                 items: {
-                  $ref: '#/definitions/Third'
+                  $ref: "#/definitions/Third"
                 }
               }
             }
@@ -721,9 +721,9 @@ describe('resolver', () => {
           Second: {
             properties: {
               children: {
-                type: 'array',
+                type: "array",
                 items: {
-                  $ref: '#/definitions/Third'
+                  $ref: "#/definitions/Third"
                 }
               }
             }
@@ -731,9 +731,9 @@ describe('resolver', () => {
           Third: {
             properties: {
               children: {
-                type: 'array',
+                type: "array",
                 items: {
-                  $ref: '#/definitions/Third'
+                  $ref: "#/definitions/Third"
                 }
               }
             }
@@ -744,10 +744,10 @@ describe('resolver', () => {
   })
 
   test(
-    'should not throw errors on resvered-keywords in freely-named-fields',
+    "should not throw errors on resvered-keywords in freely-named-fields",
     () => {
       // Given
-      const ReservedKeywordSpec = jsYaml.safeLoad(fs.readFileSync(path.resolve(__dirname, './data/reserved-keywords.yaml'), 'utf8'))
+      const ReservedKeywordSpec = jsYaml.safeLoad(fs.readFileSync(path.resolve(__dirname, "./data/reserved-keywords.yaml"), "utf8"))
 
       // When
       return Swagger.resolve({spec: ReservedKeywordSpec, allowMetaPatches: false})
@@ -765,29 +765,29 @@ describe('resolver', () => {
   )
 
   const DOCUMENT_ORIGINAL = {
-    swagger: '2.0',
+    swagger: "2.0",
     paths: {
-      '/pet': {
+      "/pet": {
         post: {
           tags: [
-            'pet'
+            "pet"
           ],
-          summary: 'Add a new pet to the store',
-          operationId: 'addPet',
+          summary: "Add a new pet to the store",
+          operationId: "addPet",
           parameters: [
             {
-              in: 'body',
-              name: 'body',
-              description: 'Pet object that needs to be added to the store',
+              in: "body",
+              name: "body",
+              description: "Pet object that needs to be added to the store",
               required: true,
               schema: {
-                $ref: '#/definitions/Pet'
+                $ref: "#/definitions/Pet"
               }
             }
           ],
           responses: {
             405: {
-              description: 'Invalid input'
+              description: "Invalid input"
             }
           }
         }
@@ -795,33 +795,33 @@ describe('resolver', () => {
     },
     definitions: {
       Category: {
-        type: 'object',
+        type: "object",
         properties: {
           id: {
-            type: 'integer',
-            format: 'int64'
+            type: "integer",
+            format: "int64"
           },
           name: {
-            type: 'string'
+            type: "string"
           }
         }
       },
       Pet: {
-        type: 'object',
+        type: "object",
         required: [
-          'category'
+          "category"
         ],
         properties: {
           category: {
-            $ref: '#/definitions/Category'
+            $ref: "#/definitions/Category"
           }
         }
       }
     }
   }
 
-  describe('Swagger usage', () => {
-    test.skip('should be able to resolve a Swagger document with $refs', () => {
+  describe("Swagger usage", () => {
+    test.skip("should be able to resolve a Swagger document with $refs", () => {
       // When
       return Swagger.resolve({spec: DOCUMENT_ORIGINAL, allowMetaPatches: false})
       .then(handleResponse)
@@ -830,37 +830,37 @@ describe('resolver', () => {
       function handleResponse(obj) {
         expect(obj.errors).toEqual([])
         expect(obj.spec).toEqual({
-          swagger: '2.0',
+          swagger: "2.0",
           paths: {
-            '/pet': {
+            "/pet": {
               post: {
                 tags: [
-                  'pet'
+                  "pet"
                 ],
-                summary: 'Add a new pet to the store',
-                operationId: 'addPet',
-                __originalOperationId: 'addPet',
+                summary: "Add a new pet to the store",
+                operationId: "addPet",
+                __originalOperationId: "addPet",
                 parameters: [
                   {
-                    in: 'body',
-                    name: 'body',
-                    description: 'Pet object that needs to be added to the store',
+                    in: "body",
+                    name: "body",
+                    description: "Pet object that needs to be added to the store",
                     required: true,
                     schema: {
-                      type: 'object',
+                      type: "object",
                       required: [
-                        'category'
+                        "category"
                       ],
                       properties: {
                         category: {
-                          type: 'object',
+                          type: "object",
                           properties: {
                             id: {
-                              type: 'integer',
-                              format: 'int64'
+                              type: "integer",
+                              format: "int64"
                             },
                             name: {
-                              type: 'string'
+                              type: "string"
                             }
                           }
                         }
@@ -870,7 +870,7 @@ describe('resolver', () => {
                 ],
                 responses: {
                   405: {
-                    description: 'Invalid input'
+                    description: "Invalid input"
                   }
                 }
               }
@@ -878,32 +878,32 @@ describe('resolver', () => {
           },
           definitions: {
             Category: {
-              type: 'object',
+              type: "object",
               properties: {
                 id: {
-                  type: 'integer',
-                  format: 'int64'
+                  type: "integer",
+                  format: "int64"
                 },
                 name: {
-                  type: 'string'
+                  type: "string"
                 }
               }
             },
             Pet: {
-              type: 'object',
+              type: "object",
               required: [
-                'category'
+                "category"
               ],
               properties: {
                 category: {
-                  type: 'object',
+                  type: "object",
                   properties: {
                     id: {
-                      type: 'integer',
-                      format: 'int64'
+                      type: "integer",
+                      format: "int64"
                     },
                     name: {
-                      type: 'string'
+                      type: "string"
                     }
                   }
                 }
@@ -915,7 +915,7 @@ describe('resolver', () => {
     })
 
     test(
-      'should be able to resolve a Swagger document with $refs when allowMetaPatches is enabled',
+      "should be able to resolve a Swagger document with $refs when allowMetaPatches is enabled",
       () => {
         // When
         return Swagger.resolve({spec: DOCUMENT_ORIGINAL, allowMetaPatches: true})
@@ -925,40 +925,40 @@ describe('resolver', () => {
         function handleResponse(obj) {
           expect(obj.errors).toEqual([])
           expect(obj.spec).toEqual({
-            swagger: '2.0',
+            swagger: "2.0",
             $$normalized: true,
             paths: {
-              '/pet': {
+              "/pet": {
                 post: {
                   tags: [
-                    'pet'
+                    "pet"
                   ],
-                  summary: 'Add a new pet to the store',
-                  operationId: 'addPet',
-                  __originalOperationId: 'addPet',
+                  summary: "Add a new pet to the store",
+                  operationId: "addPet",
+                  __originalOperationId: "addPet",
                   parameters: [
                     {
-                      in: 'body',
-                      name: 'body',
-                      description: 'Pet object that needs to be added to the store',
+                      in: "body",
+                      name: "body",
+                      description: "Pet object that needs to be added to the store",
                       required: true,
                       schema: {
-                        $$ref: '#/definitions/Pet',
-                        type: 'object',
+                        $$ref: "#/definitions/Pet",
+                        type: "object",
                         required: [
-                          'category'
+                          "category"
                         ],
                         properties: {
                           category: {
-                            $$ref: '#/definitions/Category',
-                            type: 'object',
+                            $$ref: "#/definitions/Category",
+                            type: "object",
                             properties: {
                               id: {
-                                type: 'integer',
-                                format: 'int64'
+                                type: "integer",
+                                format: "int64"
                               },
                               name: {
-                                type: 'string'
+                                type: "string"
                               }
                             }
                           }
@@ -968,7 +968,7 @@ describe('resolver', () => {
                   ],
                   responses: {
                     405: {
-                      description: 'Invalid input'
+                      description: "Invalid input"
                     }
                   }
                 }
@@ -976,33 +976,33 @@ describe('resolver', () => {
             },
             definitions: {
               Category: {
-                type: 'object',
+                type: "object",
                 properties: {
                   id: {
-                    type: 'integer',
-                    format: 'int64'
+                    type: "integer",
+                    format: "int64"
                   },
                   name: {
-                    type: 'string'
+                    type: "string"
                   }
                 }
               },
               Pet: {
-                type: 'object',
+                type: "object",
                 required: [
-                  'category'
+                  "category"
                 ],
                 properties: {
                   category: {
-                    $$ref: '#/definitions/Category',
-                    type: 'object',
+                    $$ref: "#/definitions/Category",
+                    type: "object",
                     properties: {
                       id: {
-                        type: 'integer',
-                        format: 'int64'
+                        type: "integer",
+                        format: "int64"
                       },
                       name: {
-                        type: 'string'
+                        type: "string"
                       }
                     }
                   }

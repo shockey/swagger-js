@@ -1,31 +1,31 @@
-import xmock from 'xmock'
-import path from 'path'
-import fs from 'fs'
-import qs from 'querystring'
-import jsYaml from '@kyleshockey/js-yaml'
+import xmock from "xmock"
+import path from "path"
+import fs from "fs"
+import qs from "querystring"
+import jsYaml from "@kyleshockey/js-yaml"
 
-import {execute, buildRequest, baseUrl, applySecurities, self as stubs} from '../../../../src/execute'
+import {execute, buildRequest, baseUrl, applySecurities, self as stubs} from "../../../../src/execute"
 
-const petstoreSpec = jsYaml.safeLoad(fs.readFileSync(path.join('test', 'oas3', 'data', 'petstore-oas3.yaml'), 'utf8'))
+const petstoreSpec = jsYaml.safeLoad(fs.readFileSync(path.join("test", "oas3", "data", "petstore-oas3.yaml"), "utf8"))
 
-describe('OAS 3.0 - buildRequest w/ `style` & `explode` - header parameters', () => {
-  describe('primitive values', () => {
+describe("OAS 3.0 - buildRequest w/ `style` & `explode` - header parameters", () => {
+  describe("primitive values", () => {
     const VALUE = 5
 
     test(
-      'default: should build a header parameter in simple/no-explode format',
+      "default: should build a header parameter in simple/no-explode format",
       () => {
         // Given
         const spec = {
-          openapi: '3.0.0',
+          openapi: "3.0.0",
           paths: {
-            '/users': {
+            "/users": {
               get: {
-                operationId: 'myOperation',
+                operationId: "myOperation",
                 parameters: [
                   {
-                    name: 'X-MyHeader',
-                    in: 'header'
+                    name: "X-MyHeader",
+                    in: "header"
                   }
                 ]
               }
@@ -36,38 +36,38 @@ describe('OAS 3.0 - buildRequest w/ `style` & `explode` - header parameters', ()
         // when
         const req = buildRequest({
           spec,
-          operationId: 'myOperation',
+          operationId: "myOperation",
           parameters: {
-            'X-MyHeader': VALUE
+            "X-MyHeader": VALUE
           }
         })
 
         expect(req).toEqual({
-          method: 'GET',
-          url: '/users',
-          credentials: 'same-origin',
+          method: "GET",
+          url: "/users",
+          credentials: "same-origin",
           headers: {
-            'X-MyHeader': '5'
+            "X-MyHeader": "5"
           },
         })
       }
     )
 
     test(
-      'should build a header parameter in simple/no-explode format',
+      "should build a header parameter in simple/no-explode format",
       () => {
         // Given
         const spec = {
-          openapi: '3.0.0',
+          openapi: "3.0.0",
           paths: {
-            '/users': {
+            "/users": {
               get: {
-                operationId: 'myOperation',
+                operationId: "myOperation",
                 parameters: [
                   {
-                    name: 'X-MyHeader',
-                    in: 'header',
-                    style: 'simple',
+                    name: "X-MyHeader",
+                    in: "header",
+                    style: "simple",
                     explode: false
                   }
                 ]
@@ -79,38 +79,38 @@ describe('OAS 3.0 - buildRequest w/ `style` & `explode` - header parameters', ()
         // when
         const req = buildRequest({
           spec,
-          operationId: 'myOperation',
+          operationId: "myOperation",
           parameters: {
-            'X-MyHeader': VALUE
+            "X-MyHeader": VALUE
           }
         })
 
         expect(req).toEqual({
-          method: 'GET',
-          url: '/users',
-          credentials: 'same-origin',
+          method: "GET",
+          url: "/users",
+          credentials: "same-origin",
           headers: {
-            'X-MyHeader': '5'
+            "X-MyHeader": "5"
           },
         })
       }
     )
 
     test(
-      'should build a header parameter in simple/no-explode format with special characters',
+      "should build a header parameter in simple/no-explode format with special characters",
       () => {
         // Given
         const spec = {
-          openapi: '3.0.0',
+          openapi: "3.0.0",
           paths: {
-            '/users': {
+            "/users": {
               get: {
-                operationId: 'myOperation',
+                operationId: "myOperation",
                 parameters: [
                   {
-                    name: 'X-MyHeader',
-                    in: 'header',
-                    style: 'simple',
+                    name: "X-MyHeader",
+                    in: "header",
+                    style: "simple",
                     explode: false
                   }
                 ]
@@ -122,36 +122,36 @@ describe('OAS 3.0 - buildRequest w/ `style` & `explode` - header parameters', ()
         // when
         const req = buildRequest({
           spec,
-          operationId: 'myOperation',
+          operationId: "myOperation",
           parameters: {
-            'X-MyHeader': ' <>"%{}|\\^'
+            "X-MyHeader": " <>\"%{}|\\^"
           }
         })
 
         expect(req).toEqual({
-          method: 'GET',
-          url: '/users',
-          credentials: 'same-origin',
+          method: "GET",
+          url: "/users",
+          credentials: "same-origin",
           headers: {
-            'X-MyHeader': ' <>"%{}|\\^'
+            "X-MyHeader": " <>\"%{}|\\^"
           },
         })
       }
     )
 
-    test('should build a header parameter in simple/explode format', () => {
+    test("should build a header parameter in simple/explode format", () => {
       // Given
       const spec = {
-        openapi: '3.0.0',
+        openapi: "3.0.0",
         paths: {
-          '/users': {
+          "/users": {
             get: {
-              operationId: 'myOperation',
+              operationId: "myOperation",
               parameters: [
                 {
-                  name: 'X-MyHeader',
-                  in: 'header',
-                  style: 'simple',
+                  name: "X-MyHeader",
+                  in: "header",
+                  style: "simple",
                   explode: true
                 }
               ]
@@ -163,39 +163,39 @@ describe('OAS 3.0 - buildRequest w/ `style` & `explode` - header parameters', ()
       // when
       const req = buildRequest({
         spec,
-        operationId: 'myOperation',
+        operationId: "myOperation",
         parameters: {
-          'X-MyHeader': VALUE
+          "X-MyHeader": VALUE
         }
       })
 
       expect(req).toEqual({
-        method: 'GET',
-        url: '/users',
-        credentials: 'same-origin',
+        method: "GET",
+        url: "/users",
+        credentials: "same-origin",
         headers: {
-          'X-MyHeader': '5'
+          "X-MyHeader": "5"
         },
       })
     })
   })
-  describe('array values', () => {
+  describe("array values", () => {
     const VALUE = [3, 4, 5]
 
     test(
-      'default: should build a header parameter in simple/no-explode format',
+      "default: should build a header parameter in simple/no-explode format",
       () => {
         // Given
         const spec = {
-          openapi: '3.0.0',
+          openapi: "3.0.0",
           paths: {
-            '/users': {
+            "/users": {
               get: {
-                operationId: 'myOperation',
+                operationId: "myOperation",
                 parameters: [
                   {
-                    name: 'X-MyHeader',
-                    in: 'header'
+                    name: "X-MyHeader",
+                    in: "header"
                   }
                 ]
               }
@@ -206,38 +206,38 @@ describe('OAS 3.0 - buildRequest w/ `style` & `explode` - header parameters', ()
         // when
         const req = buildRequest({
           spec,
-          operationId: 'myOperation',
+          operationId: "myOperation",
           parameters: {
-            'X-MyHeader': VALUE
+            "X-MyHeader": VALUE
           }
         })
 
         expect(req).toEqual({
-          method: 'GET',
-          url: '/users',
-          credentials: 'same-origin',
+          method: "GET",
+          url: "/users",
+          credentials: "same-origin",
           headers: {
-            'X-MyHeader': '3,4,5'
+            "X-MyHeader": "3,4,5"
           },
         })
       }
     )
 
     test(
-      'should build a header parameter in simple/no-explode format',
+      "should build a header parameter in simple/no-explode format",
       () => {
         // Given
         const spec = {
-          openapi: '3.0.0',
+          openapi: "3.0.0",
           paths: {
-            '/users': {
+            "/users": {
               get: {
-                operationId: 'myOperation',
+                operationId: "myOperation",
                 parameters: [
                   {
-                    name: 'X-MyHeader',
-                    in: 'header',
-                    style: 'simple',
+                    name: "X-MyHeader",
+                    in: "header",
+                    style: "simple",
                     explode: false
                   }
                 ]
@@ -249,36 +249,36 @@ describe('OAS 3.0 - buildRequest w/ `style` & `explode` - header parameters', ()
         // when
         const req = buildRequest({
           spec,
-          operationId: 'myOperation',
+          operationId: "myOperation",
           parameters: {
-            'X-MyHeader': VALUE
+            "X-MyHeader": VALUE
           }
         })
 
         expect(req).toEqual({
-          method: 'GET',
-          url: '/users',
-          credentials: 'same-origin',
+          method: "GET",
+          url: "/users",
+          credentials: "same-origin",
           headers: {
-            'X-MyHeader': '3,4,5'
+            "X-MyHeader": "3,4,5"
           },
         })
       }
     )
 
-    test('should build a header parameter in simple/explode format', () => {
+    test("should build a header parameter in simple/explode format", () => {
       // Given
       const spec = {
-        openapi: '3.0.0',
+        openapi: "3.0.0",
         paths: {
-          '/users': {
+          "/users": {
             get: {
-              operationId: 'myOperation',
+              operationId: "myOperation",
               parameters: [
                 {
-                  name: 'X-MyHeader',
-                  in: 'header',
-                  style: 'simple',
+                  name: "X-MyHeader",
+                  in: "header",
+                  style: "simple",
                   explode: true
                 }
               ]
@@ -290,42 +290,42 @@ describe('OAS 3.0 - buildRequest w/ `style` & `explode` - header parameters', ()
       // when
       const req = buildRequest({
         spec,
-        operationId: 'myOperation',
+        operationId: "myOperation",
         parameters: {
-          'X-MyHeader': VALUE
+          "X-MyHeader": VALUE
         }
       })
 
       expect(req).toEqual({
-        method: 'GET',
-        url: '/users',
-        credentials: 'same-origin',
+        method: "GET",
+        url: "/users",
+        credentials: "same-origin",
         headers: {
-          'X-MyHeader': '3,4,5'
+          "X-MyHeader": "3,4,5"
         },
       })
     })
   })
-  describe('object values', () => {
+  describe("object values", () => {
     const VALUE = {
-      role: 'admin',
-      firstName: 'Alex'
+      role: "admin",
+      firstName: "Alex"
     }
 
     test(
-      'default: should build a header parameter in simple/no-explode format',
+      "default: should build a header parameter in simple/no-explode format",
       () => {
         // Given
         const spec = {
-          openapi: '3.0.0',
+          openapi: "3.0.0",
           paths: {
-            '/users': {
+            "/users": {
               get: {
-                operationId: 'myOperation',
+                operationId: "myOperation",
                 parameters: [
                   {
-                    name: 'X-MyHeader',
-                    in: 'header'
+                    name: "X-MyHeader",
+                    in: "header"
                   }
                 ]
               }
@@ -336,38 +336,38 @@ describe('OAS 3.0 - buildRequest w/ `style` & `explode` - header parameters', ()
         // when
         const req = buildRequest({
           spec,
-          operationId: 'myOperation',
+          operationId: "myOperation",
           parameters: {
-            'X-MyHeader': VALUE
+            "X-MyHeader": VALUE
           }
         })
 
         expect(req).toEqual({
-          method: 'GET',
-          url: '/users',
-          credentials: 'same-origin',
+          method: "GET",
+          url: "/users",
+          credentials: "same-origin",
           headers: {
-            'X-MyHeader': 'role,admin,firstName,Alex'
+            "X-MyHeader": "role,admin,firstName,Alex"
           },
         })
       }
     )
 
     test(
-      'should build a header parameter in simple/no-explode format',
+      "should build a header parameter in simple/no-explode format",
       () => {
         // Given
         const spec = {
-          openapi: '3.0.0',
+          openapi: "3.0.0",
           paths: {
-            '/users': {
+            "/users": {
               get: {
-                operationId: 'myOperation',
+                operationId: "myOperation",
                 parameters: [
                   {
-                    name: 'X-MyHeader',
-                    in: 'header',
-                    style: 'simple',
+                    name: "X-MyHeader",
+                    in: "header",
+                    style: "simple",
                     explode: false
                   }
                 ]
@@ -379,36 +379,36 @@ describe('OAS 3.0 - buildRequest w/ `style` & `explode` - header parameters', ()
         // when
         const req = buildRequest({
           spec,
-          operationId: 'myOperation',
+          operationId: "myOperation",
           parameters: {
-            'X-MyHeader': VALUE
+            "X-MyHeader": VALUE
           }
         })
 
         expect(req).toEqual({
-          method: 'GET',
-          url: '/users',
-          credentials: 'same-origin',
+          method: "GET",
+          url: "/users",
+          credentials: "same-origin",
           headers: {
-            'X-MyHeader': 'role,admin,firstName,Alex'
+            "X-MyHeader": "role,admin,firstName,Alex"
           },
         })
       }
     )
 
-    test('should build a header parameter in simple/explode format', () => {
+    test("should build a header parameter in simple/explode format", () => {
       // Given
       const spec = {
-        openapi: '3.0.0',
+        openapi: "3.0.0",
         paths: {
-          '/users': {
+          "/users": {
             get: {
-              operationId: 'myOperation',
+              operationId: "myOperation",
               parameters: [
                 {
-                  name: 'X-MyHeader',
-                  in: 'header',
-                  style: 'simple',
+                  name: "X-MyHeader",
+                  in: "header",
+                  style: "simple",
                   explode: true
                 }
               ]
@@ -420,18 +420,18 @@ describe('OAS 3.0 - buildRequest w/ `style` & `explode` - header parameters', ()
       // when
       const req = buildRequest({
         spec,
-        operationId: 'myOperation',
+        operationId: "myOperation",
         parameters: {
-          'X-MyHeader': VALUE
+          "X-MyHeader": VALUE
         }
       })
 
       expect(req).toEqual({
-        method: 'GET',
-        url: '/users',
-        credentials: 'same-origin',
+        method: "GET",
+        url: "/users",
+        credentials: "same-origin",
         headers: {
-          'X-MyHeader': 'role=admin,firstName=Alex'
+          "X-MyHeader": "role=admin,firstName=Alex"
         },
       })
     })

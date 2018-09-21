@@ -26,7 +26,7 @@ rules:
   brace-style: [2, stroustrup]
   no-use-before-define: [2, nofunc]
   object-curly-spacing: [2, never]
-  quotes: [2, single]
+  quotes: [2, double]
   semi: [2, never]
   no-unused-expressions:
   - 2

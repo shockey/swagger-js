@@ -1,25 +1,25 @@
-import xmock from 'xmock'
-import Swagger from '../src/index'
+import xmock from "xmock"
+import Swagger from "../src/index"
 
-describe('constructor', () => {
+describe("constructor", () => {
   afterEach(() => {
     jest.restoreAllMocks()
     xmock().restore()
   })
 
-  test('should export a function', () => {
-    expect(typeof Swagger).toBe('function')
+  test("should export a function", () => {
+    expect(typeof Swagger).toBe("function")
   })
 
-  test('should return an instance, without "new"', (cb) => {
+  test("should return an instance, without \"new\"", (cb) => {
     Swagger({spec: {}}).then((instance) => {
       expect(instance).toBeInstanceOf(Swagger)
       cb()
     })
   })
 
-  describe('instance', () => {
-    test('should ignore an empty spec', () => {
+  describe("instance", () => {
+    test("should ignore an empty spec", () => {
       // Given
       const spec = {}
 
@@ -28,36 +28,36 @@ describe('constructor', () => {
       })
     })
 
-    test('should resolve the spec', () => {
+    test("should resolve the spec", () => {
       // Given
       const spec = {
         one: {
-          $ref: '#/two'
+          $ref: "#/two"
         },
         two: {
-          hi: 'hello'
+          hi: "hello"
         }
       }
 
       return Swagger({spec, allowMetaPatches: false}).then((swag) => {
         expect(swag.spec).toEqual({
           one: {
-            hi: 'hello'
+            hi: "hello"
           },
           two: {
-            hi: 'hello'
+            hi: "hello"
           }
         })
       })
     })
 
-    test('should resolve a cyclic spec when baseDoc is specified', (cb) => {
+    test("should resolve a cyclic spec when baseDoc is specified", (cb) => {
       const spec = {
         paths: {
           post: {
             parameters: [
               {
-                $ref: '#/definitions/list',
+                $ref: "#/definitions/list",
               }
             ]
           }
@@ -65,49 +65,49 @@ describe('constructor', () => {
         definitions: {
           item: {
             items: {
-              $ref: '#/definitions/item'
+              $ref: "#/definitions/item"
             }
           },
           list: {
             items: {
-              $ref: '#/definitions/item'
+              $ref: "#/definitions/item"
             }
           }
         }
       }
 
-      Swagger.resolve({spec, baseDoc: 'http://whatever/'}).then((swag) => {
+      Swagger.resolve({spec, baseDoc: "http://whatever/"}).then((swag) => {
         expect(swag.errors).toEqual([])
         cb()
       })
     })
 
 
-    test('should keep resolve errors in #errors', () => {
+    test("should keep resolve errors in #errors", () => {
       // Given
       const spec = {
         $ref: 1
       }
 
       return Swagger({spec}).then((swag) => {
-        expect(swag.errors[0].message).toEqual('$ref: must be a string (JSON-Ref)')
+        expect(swag.errors[0].message).toEqual("$ref: must be a string (JSON-Ref)")
       })
     })
 
-    test('should NOT add `apis` if disableInterfaces', () => {
+    test("should NOT add `apis` if disableInterfaces", () => {
       return Swagger({spec: {}, disableInterfaces: true}).then((swag) => {
         expect(swag.apis).toEqual()
       })
     })
 
-    test('should add `apis` from the makeApisTagOperation', () => {
+    test("should add `apis` from the makeApisTagOperation", () => {
       // Given
       const spec = {
         paths: {
-          '/one': {
+          "/one": {
             get: {
-              tags: ['me'],
-              operationId: 'getMe'
+              tags: ["me"],
+              operationId: "getMe"
             }
           }
         }
@@ -118,22 +118,22 @@ describe('constructor', () => {
         const {apis} = swag
 
         // Then
-        expect(typeof apis).toBe('object')
+        expect(typeof apis).toBe("object")
         expect(apis.me.getMe).toBeInstanceOf(Function)
       })
     })
 
     test(
-      'should honor `v2OperationIdCompatibilityMode` when building `apis`',
+      "should honor `v2OperationIdCompatibilityMode` when building `apis`",
       () => {
         // Given
         const spec = {
-          swagger: '2.0',
+          swagger: "2.0",
           paths: {
-            '/foo/{bar}/baz': {
+            "/foo/{bar}/baz": {
               get: {
-                description: '',
-                tags: ['myTag']
+                description: "",
+                tags: ["myTag"]
               }
             }
           }
@@ -147,29 +147,29 @@ describe('constructor', () => {
           const {apis} = swag
 
           // Then
-          expect(typeof apis).toBe('object')
-          expect(typeof apis.myTag).toBe('object')
+          expect(typeof apis).toBe("object")
+          expect(typeof apis.myTag).toBe("object")
           expect(apis.myTag.get_foo_bar_baz).toBeInstanceOf(Function)
         })
       }
     )
 
-    test('should handle circular $refs when a baseDoc is provided', () => {
+    test("should handle circular $refs when a baseDoc is provided", () => {
       // Given
       const spec = {
-        swagger: '2.0',
+        swagger: "2.0",
         definitions: {
           node: {
-            required: ['id', 'nodes'],
-            type: 'object',
+            required: ["id", "nodes"],
+            type: "object",
             properties: {
               id: {
-                type: 'string'
+                type: "string"
               },
               nodes: {
-                type: 'array',
+                type: "array",
                 items: {
-                  $ref: '#/definitions/node'
+                  $ref: "#/definitions/node"
                 }
               }
             }
@@ -181,7 +181,7 @@ describe('constructor', () => {
       return Swagger.resolve({
         spec,
         allowMetaPatches: false,
-        baseDoc: 'http://example.com/swagger.json'
+        baseDoc: "http://example.com/swagger.json"
       }).then(handleResponse)
 
       // Then
@@ -192,32 +192,32 @@ describe('constructor', () => {
     })
   })
 
-  describe('#http', () => {
-    test('should throw if fetch error', (cb) => {
+  describe("#http", () => {
+    test("should throw if fetch error", (cb) => {
       const xapp = xmock()
-      xapp.get('http://petstore.swagger.io/404', (req, res) => {
+      xapp.get("http://petstore.swagger.io/404", (req, res) => {
         res.status(404)
-        res.send('not found')
+        res.send("not found")
       })
 
-      new Swagger({url: 'http://petstore.swagger.io/404'})
+      new Swagger({url: "http://petstore.swagger.io/404"})
         .catch((err) => {
           expect(err.status).toBe(404)
-          expect(err.message).toBe('Not Found')
+          expect(err.message).toBe("Not Found")
           cb()
         })
     })
 
-    test('should serialize the response', () => {
+    test("should serialize the response", () => {
       // Given
-      require('cross-fetch/polyfill') // To ensure global.Headers
-      const xapp = xmock().get('https://swagger.io/one', function (req, res, next) {
-        res.set('hi', 'ho')
+      require("cross-fetch/polyfill") // To ensure global.Headers
+      const xapp = xmock().get("https://swagger.io/one", function (req, res, next) {
+        res.set("hi", "ho")
         return res.send({me: true})
       })
 
       const req = {
-        url: 'https://swagger.io/one',
+        url: "https://swagger.io/one",
       }
 
       return Swagger.http(req)
@@ -227,14 +227,14 @@ describe('constructor', () => {
             ok: true,
             status: 200,
             headers: {
-              connection: 'close',
-              'content-type': 'application/json',
+              connection: "close",
+              "content-type": "application/json",
 
-              hi: 'ho'
+              hi: "ho"
             },
-            statusText: 'OK',
-            data: '{"me":true}',
-            text: '{"me":true}',
+            statusText: "OK",
+            data: "{\"me\":true}",
+            text: "{\"me\":true}",
             body: {
               me: true
             },
@@ -245,58 +245,58 @@ describe('constructor', () => {
         })
     })
 
-    test('should handle invalid JSON bodies', () => {
+    test("should handle invalid JSON bodies", () => {
       // Given
-      const xapp = xmock().get('https://swagger.io/one', function (req, res, next) {
-        return res.send('[')
+      const xapp = xmock().get("https://swagger.io/one", function (req, res, next) {
+        return res.send("[")
       })
 
       const req = {
-        url: 'https://swagger.io/one'
+        url: "https://swagger.io/one"
       }
 
       return Swagger.http(req)
         .then((res) => {
           const {body, text, status} = res
           expect(status).toEqual(200)
-          expect(text).toEqual('[')
+          expect(text).toEqual("[")
           expect(body).toEqual()
         })
     })
   })
 
-  describe('#execute', () => {
-    test('should be able to execute a simple operation', () => {
+  describe("#execute", () => {
+    test("should be able to execute a simple operation", () => {
       const spec = {
         paths: {
-          '/pet': {
+          "/pet": {
             get: {
-              operationId: 'getPets'
+              operationId: "getPets"
             }
           }
         }
       }
       return Swagger({spec}).then((client) => {
         const http = jest.fn()
-        client.execute({http, operationId: 'getPets'})
+        client.execute({http, operationId: "getPets"})
         expect(http.mock.calls.length).toEqual(1)
         expect(http.mock.calls[0][0]).toEqual({
           headers: {},
-          method: 'GET',
-          credentials: 'same-origin',
-          url: '/pet'
+          method: "GET",
+          credentials: "same-origin",
+          url: "/pet"
         })
       })
     })
 
     test(
-      'should respect the `withCredentials` flag on the http agent',
+      "should respect the `withCredentials` flag on the http agent",
       () => {
         const spec = {
           paths: {
-            '/pet': {
+            "/pet": {
               get: {
-                operationId: 'getPets'
+                operationId: "getPets"
               }
             }
           }
@@ -304,29 +304,29 @@ describe('constructor', () => {
         return Swagger({spec}).then((client) => {
           const http = jest.fn()
           http.withCredentials = true
-          client.execute({http, operationId: 'getPets'})
+          client.execute({http, operationId: "getPets"})
           expect(http.mock.calls.length).toEqual(1)
           expect(http.mock.calls[0][0]).toEqual({
             headers: {},
-            method: 'GET',
-            credentials: 'include',
-            url: '/pet'
+            method: "GET",
+            credentials: "include",
+            url: "/pet"
           })
         })
       }
     )
 
-    test('should add basic auth to a request', () => {
+    test("should add basic auth to a request", () => {
       const spec = {
         securityDefinitions: {
           myBasic: {
-            type: 'basic'
+            type: "basic"
           }
         },
         paths: {
-          '/pet': {
+          "/pet": {
             get: {
-              operationId: 'getPets',
+              operationId: "getPets",
               security: [{myBasic: []}]
             }
           }
@@ -335,39 +335,39 @@ describe('constructor', () => {
 
       const authorizations = {
         myBasic: {
-          username: 'foo',
-          password: 'bar'
+          username: "foo",
+          password: "bar"
         }
       }
 
       return Swagger({spec, authorizations}).then((client) => {
         const http = jest.fn()
-        client.execute({http, operationId: 'getPets'})
+        client.execute({http, operationId: "getPets"})
         expect(http.mock.calls.length).toEqual(1)
         expect(http.mock.calls[0][0]).toEqual({
           headers: {
-            authorization: 'Basic Zm9vOmJhcg=='
+            authorization: "Basic Zm9vOmJhcg=="
           },
-          credentials: 'same-origin',
-          method: 'GET',
-          url: '/pet'
+          credentials: "same-origin",
+          method: "GET",
+          url: "/pet"
         })
       })
     })
 
-    test('should add apiKey (header) auth to a request', () => {
+    test("should add apiKey (header) auth to a request", () => {
       const spec = {
         securityDefinitions: {
           petKey: {
-            type: 'apiKey',
-            name: 'petKey',
-            in: 'header'
+            type: "apiKey",
+            name: "petKey",
+            in: "header"
           }
         },
         paths: {
-          '/pet': {
+          "/pet": {
             get: {
-              operationId: 'getPets',
+              operationId: "getPets",
               security: [{petKey: []}]
             }
           }
@@ -375,37 +375,37 @@ describe('constructor', () => {
       }
 
       const authorizations = {
-        petKey: 'fooBar'
+        petKey: "fooBar"
       }
 
       return Swagger({spec, authorizations}).then((client) => {
         const http = jest.fn()
-        client.execute({http, operationId: 'getPets'})
+        client.execute({http, operationId: "getPets"})
         expect(http.mock.calls.length).toEqual(1)
         expect(http.mock.calls[0][0]).toEqual({
           headers: {
-            petKey: 'fooBar'
+            petKey: "fooBar"
           },
-          credentials: 'same-origin',
-          method: 'GET',
-          url: '/pet'
+          credentials: "same-origin",
+          method: "GET",
+          url: "/pet"
         })
       })
     })
 
-    test('should add apiKey (query) auth to a request', () => {
+    test("should add apiKey (query) auth to a request", () => {
       const spec = {
         securityDefinitions: {
           petKey: {
-            type: 'apiKey',
-            name: 'petKey',
-            in: 'query'
+            type: "apiKey",
+            name: "petKey",
+            in: "query"
           }
         },
         paths: {
-          '/pet': {
+          "/pet": {
             get: {
-              operationId: 'getPets',
+              operationId: "getPets",
               security: [{petKey: []}]
             }
           }
@@ -413,33 +413,33 @@ describe('constructor', () => {
       }
 
       const authorizations = {
-        petKey: 'barFoo'
+        petKey: "barFoo"
       }
 
       return Swagger({spec, authorizations}).then((client) => {
         const http = jest.fn()
-        client.execute({http, operationId: 'getPets'})
+        client.execute({http, operationId: "getPets"})
         expect(http.mock.calls.length).toEqual(1)
         expect(http.mock.calls[0][0]).toEqual({
           headers: { },
-          method: 'GET',
-          credentials: 'same-origin',
-          url: '/pet?petKey=barFoo'
+          method: "GET",
+          credentials: "same-origin",
+          url: "/pet?petKey=barFoo"
         })
       })
     })
 
-    test('should add oAuth to a request', () => {
+    test("should add oAuth to a request", () => {
       const spec = {
         securityDefinitions: {
           ohYou: {
-            type: 'oauth2',
+            type: "oauth2",
           }
         },
         paths: {
-          '/pet': {
+          "/pet": {
             get: {
-              operationId: 'getPets',
+              operationId: "getPets",
               security: [{ohYou: []}]
             }
           }
@@ -449,43 +449,43 @@ describe('constructor', () => {
       const authorizations = {
         ohYou: {
           token: {
-            access_token: 'one two'
+            access_token: "one two"
           }
         }
       }
 
       return Swagger({spec, authorizations}).then((client) => {
         const http = jest.fn()
-        client.execute({http, operationId: 'getPets'})
+        client.execute({http, operationId: "getPets"})
         expect(http.mock.calls.length).toEqual(1)
         expect(http.mock.calls[0][0]).toEqual({
           headers: {
-            authorization: 'Bearer one two'
+            authorization: "Bearer one two"
           },
-          credentials: 'same-origin',
-          method: 'GET',
-          url: '/pet'
+          credentials: "same-origin",
+          method: "GET",
+          url: "/pet"
         })
       })
     })
 
     test(
-      'should not add an empty oAuth2 Bearer token header to a request',
+      "should not add an empty oAuth2 Bearer token header to a request",
       () => {
         const spec = {
           securityDefinitions: {
             bearer: {
-              description: 'Bearer authorization token',
-              type: 'oauth2',
-              name: 'Authorization',
-              in: 'header'
+              description: "Bearer authorization token",
+              type: "oauth2",
+              name: "Authorization",
+              in: "header"
             }
           },
           security: [{bearer: []}],
           paths: {
-            '/pet': {
+            "/pet": {
               get: {
-                operationId: 'getPets'
+                operationId: "getPets"
               }
             }
           }
@@ -494,88 +494,88 @@ describe('constructor', () => {
         const authorizations = {
           bearer: {
             token: {
-              access_token: ''
+              access_token: ""
             }
           }
         }
 
         return Swagger({spec, authorizations}).then((client) => {
           const http = jest.fn()
-          client.execute({http, operationId: 'getPets'})
+          client.execute({http, operationId: "getPets"})
           expect(http.mock.calls.length).toEqual(1)
           expect(http.mock.calls[0][0]).toEqual({
             headers: {},
-            credentials: 'same-origin',
-            method: 'GET',
-            url: '/pet'
+            credentials: "same-origin",
+            method: "GET",
+            url: "/pet"
           })
         })
       }
     )
 
-    test('should add global securites', () => {
+    test("should add global securites", () => {
       const spec = {
         securityDefinitions: {
           petKey: {
-            type: 'apiKey',
-            in: 'header',
-            name: 'Auth'
+            type: "apiKey",
+            in: "header",
+            name: "Auth"
           }
         },
         security: [{petKey: []}],
         paths: {
-          '/pet': {
+          "/pet": {
             get: {
-              operationId: 'getPets',
+              operationId: "getPets",
             }
           }
         }
       }
 
       const authorizations = {
-        petKey: 'yup'
+        petKey: "yup"
       }
 
       return Swagger({spec, authorizations}).then((client) => {
         const http = jest.fn()
-        client.execute({http, operationId: 'getPets'})
+        client.execute({http, operationId: "getPets"})
         expect(http.mock.calls.length).toEqual(1)
         expect(http.mock.calls[0][0]).toEqual({
           headers: {
-            Auth: 'yup'
+            Auth: "yup"
           },
-          credentials: 'same-origin',
-          method: 'GET',
-          url: '/pet'
+          credentials: "same-origin",
+          method: "GET",
+          url: "/pet"
         })
       })
     })
   })
 
-  describe('interceptor', () => {
+  describe("interceptor", () => {
     beforeEach(() => {
       Swagger.clearCache()
       const xapp = xmock()
       xapp
-        .get('http://petstore.swagger.io/v2/swagger.json', () => require('./data/petstore.json'))
-        .get('http://petstore.swagger.io/v2/pet/3', () => ({id: 3}))
-        .get('http://petstore.swagger.io/v2/pet/4', () => ({id: 4}))
-        .get('http://petstore.swagger.io/v2/ref.json', () => ({b: 2}))
-        .get('http://petstore.swagger.io/v2/base.json', () => (
+        .get("http://petstore.swagger.io/v2/swagger.json", () => require("./data/petstore.json"))
+        .get("http://petstore.swagger.io/v2/pet/3", () => ({id: 3}))
+        .get("http://petstore.swagger.io/v2/pet/4", () => ({id: 4}))
+        .get("http://petstore.swagger.io/v2/ref.json", () => ({b: 2}))
+        .get("http://petstore.swagger.io/v2/base.json", () => (
           {
-            $ref: 'http://petstore.swagger.io/v2/ref.json#b'
+            $ref: "http://petstore.swagger.io/v2/ref.json#b"
           }
         ))
     })
 
-    test('should support request interceptor', (cb) => {
+    test("should support request interceptor", (cb) => {
       new Swagger({
-        url: 'http://petstore.swagger.io/v2/swagger.json',
+        url: "http://petstore.swagger.io/v2/swagger.json",
         requestInterceptor: (req) => {
           if (req.loadSpec) {
             return req
           }
-          req.url = 'http://petstore.swagger.io/v2/pet/4'
+          req.url = "http://petstore.swagger.io/v2/pet/4"
         }
       }).then((client) => {
         client.apis.pet.getPetById({petId: 3}).then((data) => {
@@ -585,9 +585,9 @@ describe('constructor', () => {
       }, cb)
     })
 
-    test('should support response interceptor', (cb) => {
+    test("should support response interceptor", (cb) => {
       new Swagger({
-        url: 'http://petstore.swagger.io/v2/swagger.json',
+        url: "http://petstore.swagger.io/v2/swagger.json",
         responseInterceptor: (res) => {
           res.body.id = 4
         }
@@ -600,11 +600,11 @@ describe('constructor', () => {
     })
 
     test(
-      'should support request interceptor when fetching a spec and remote ref',
+      "should support request interceptor when fetching a spec and remote ref",
       (cb) => {
         const spy = jest.fn().mockImplementation(a => a)
         new Swagger({
-          url: 'http://petstore.swagger.io/v2/base.json',
+          url: "http://petstore.swagger.io/v2/base.json",
           requestInterceptor: spy
         }).then((client) => {
           expect(spy.mock.calls.length).toEqual(2)
@@ -614,14 +614,14 @@ describe('constructor', () => {
     )
 
     test(
-      'should support response interceptor when fetching a spec and remote ref',
+      "should support response interceptor when fetching a spec and remote ref",
       (cb) => {
         const spy = jest.fn().mockImplementation((a) => {
           return a
         })
 
         new Swagger({
-          url: 'http://petstore.swagger.io/v2/base.json',
+          url: "http://petstore.swagger.io/v2/base.json",
           responseInterceptor: spy
         }).then((client) => {
           expect(spy.mock.calls.length).toEqual(2)
@@ -631,12 +631,12 @@ describe('constructor', () => {
     )
 
     test(
-      'should support request and response interceptor when fetching a spec and remote ref',
+      "should support request and response interceptor when fetching a spec and remote ref",
       (cb) => {
         const reqSpy = jest.fn().mockImplementation(a => a)
         const resSpy = jest.fn().mockImplementation(a => a)
         new Swagger({
-          url: 'http://petstore.swagger.io/v2/base.json',
+          url: "http://petstore.swagger.io/v2/base.json",
           responseInterceptor: reqSpy,
           requestInterceptor: resSpy
         }).then((client) => {

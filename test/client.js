@@ -1,62 +1,62 @@
-import http from 'http'
-import url from 'url'
-import path from 'path'
-import fs from 'fs'
+import http from "http"
+import url from "url"
+import path from "path"
+import fs from "fs"
 
-import Swagger from '../src/index'
+import Swagger from "../src/index"
 
-describe('http', () => {
+describe("http", () => {
   let server
   beforeAll(function () {
     server = http.createServer(function (req, res) {
       const accept = req.headers.accept
       let contentType
       const uri = url.parse(req.url).pathname
-      const filename = path.join('test', 'data', uri)
+      const filename = path.join("test", "data", uri)
 
-      if (filename.indexOf('.yaml') > 0) {
-        contentType = 'application/yaml'
+      if (filename.indexOf(".yaml") > 0) {
+        contentType = "application/yaml"
       }
       else {
-        contentType = 'application/json'
+        contentType = "application/json"
       }
 
-      if (typeof accept !== 'undefined') {
-        if (accept === 'invalid') {
+      if (typeof accept !== "undefined") {
+        if (accept === "invalid") {
           res.writeHead(500)
           res.end()
           return
         }
 
-        if (accept.indexOf('application/json') >= 0) {
+        if (accept.indexOf("application/json") >= 0) {
           contentType = accept
-          res.setHeader('Content-Type', contentType)
+          res.setHeader("Content-Type", contentType)
         }
-        if (filename.indexOf('.yaml') > 0) {
-          res.setHeader('Content-Type', 'application/yaml')
+        if (filename.indexOf(".yaml") > 0) {
+          res.setHeader("Content-Type", "application/yaml")
         }
       }
 
-      if (req.headers['x-setcontenttype']) {
+      if (req.headers["x-setcontenttype"]) {
         // Allow the test to explicitly set (or unset) a content type
-        if (req.headers['x-setcontenttype'] === 'none') {
-          res.removeHeader('Content-Type')
+        if (req.headers["x-setcontenttype"] === "none") {
+          res.removeHeader("Content-Type")
         }
         else {
-          res.setHeader('Content-Type', req.headers['x-setcontenttype'])
+          res.setHeader("Content-Type", req.headers["x-setcontenttype"])
         }
       }
 
       fs.exists(filename, function (exists) {
         if (exists) {
           const fileStream = fs.createReadStream(filename)
-          res.setHeader('Access-Control-Allow-Origin', '*')
+          res.setHeader("Access-Control-Allow-Origin", "*")
           res.writeHead(200, contentType)
           fileStream.pipe(res)
         }
         else {
-          res.writeHead(404, {'Content-Type': 'text/plain'})
-          res.write('404 Not Found\n')
+          res.writeHead(404, {"Content-Type": "text/plain"})
+          res.write("404 Not Found\n")
           res.end()
         }
       })
@@ -70,8 +70,8 @@ describe('http', () => {
   afterEach(() => {
   })
 
-  test('should get the JSON petstore api and build it', (done) => {
-    Swagger('http://localhost:8000/petstore.json')
+  test("should get the JSON petstore api and build it", (done) => {
+    Swagger("http://localhost:8000/petstore.json")
       .then((client) => {
         expect(client).toBeTruthy()
 
@@ -88,8 +88,8 @@ describe('http', () => {
       })
   })
 
-  test('should get the YAML petstore api and build it', (done) => {
-    Swagger('http://localhost:8000/petstore.json')
+  test("should get the YAML petstore api and build it", (done) => {
+    Swagger("http://localhost:8000/petstore.json")
       .then((client) => {
         expect(client).toBeTruthy()
 
@@ -107,11 +107,11 @@ describe('http', () => {
   })
 
   test(
-    'should get the JSON petstore api and build it when response lacks a `Content-Type`',
+    "should get the JSON petstore api and build it when response lacks a `Content-Type`",
     (done) => {
-      Swagger('http://localhost:8000/petstore.json', {
+      Swagger("http://localhost:8000/petstore.json", {
         requestInterceptor: (req) => {
-          req.headers['X-SetContentType'] = 'none'
+          req.headers["X-SetContentType"] = "none"
           return req
         }
       })
@@ -134,11 +134,11 @@ describe('http', () => {
   )
 
   test(
-    'should get the YAML petstore api and build it when response lacks a `Content-Type`',
+    "should get the YAML petstore api and build it when response lacks a `Content-Type`",
     (done) => {
-      Swagger('http://localhost:8000/petstore.yaml', {
+      Swagger("http://localhost:8000/petstore.yaml", {
         requestInterceptor: (req) => {
-          req.headers['X-SetContentType'] = 'none'
+          req.headers["X-SetContentType"] = "none"
           return req
         }
       })
@@ -163,12 +163,12 @@ describe('http', () => {
   /**
    * See https://github.com/swagger-api/swagger-js/issues/1005
    */
-  test.skip('should get a pet from the petstore', (done) => {
-    Swagger('http://localhost:8000/petstore.json')
+  test.skip("should get a pet from the petstore", (done) => {
+    Swagger("http://localhost:8000/petstore.json")
       .then((client) => {
         client.apis.pet.getPetById({petId: -1})
           .then((data) => {
-            done('shoulda thrown an error!')
+            done("shoulda thrown an error!")
           })
           .catch((err) => {
             done()
@@ -179,24 +179,24 @@ describe('http', () => {
   /**
    * See https://github.com/swagger-api/swagger-js/issues/1277
    */
-  test('should return a helpful error when the connection is refused', () => {
-    return Swagger('http://localhost:1/untouchable.yaml')
+  test("should return a helpful error when the connection is refused", () => {
+    return Swagger("http://localhost:1/untouchable.yaml")
       .then((client) => {
-        throw new Error('Expected an error.')
+        throw new Error("Expected an error.")
       })
       .catch((error) => {
-        expect(error.message).toEqual('request to http://localhost:1/untouchable.yaml failed, reason: connect ECONNREFUSED 127.0.0.1:1')
-        expect(error.name).toEqual('FetchError')
+        expect(error.message).toEqual("request to http://localhost:1/untouchable.yaml failed, reason: connect ECONNREFUSED 127.0.0.1:1")
+        expect(error.name).toEqual("FetchError")
       })
   })
 
   /**
    * See https://github.com/swagger-api/swagger-js/issues/1002
    */
-  test.skip('should return an error when a spec doesnt exist', (done) => {
-    Swagger('http://localhost:8000/absent.yaml')
+  test.skip("should return an error when a spec doesnt exist", (done) => {
+    Swagger("http://localhost:8000/absent.yaml")
       .then((client) => {
-        done('expected an error')
+        done("expected an error")
       })
       .catch((error) => {
         done()
@@ -206,11 +206,11 @@ describe('http', () => {
   /**
    * See https://github.com/swagger-api/swagger-js/issues/1004
    */
-  test.skip('fail with invalid verbs', (done) => {
-    Swagger('http://localhost:8000/invalid-operation.yaml')
+  test.skip("fail with invalid verbs", (done) => {
+    Swagger("http://localhost:8000/invalid-operation.yaml")
       .then((client) => {
         expect(client.apis.default).toBeTruthy()
-        expect(typeof client.apis.default['not-a-valid-verb']).toBe('undefined')
+        expect(typeof client.apis.default["not-a-valid-verb"]).toBe("undefined")
         done()
       })
   })
@@ -219,8 +219,8 @@ describe('http', () => {
    * Loads a spec where the `host` and `schema` are not defined
    * See https://github.com/swagger-api/swagger-js/issues/1000
    */
-  test('use the host from whence the spec was fetched', (done) => {
-    Swagger('http://localhost:8000/pathless.yaml')
+  test("use the host from whence the spec was fetched", (done) => {
+    Swagger("http://localhost:8000/pathless.yaml")
       .then((client) => {
         client.apis.default.tryMe().catch((err) => {
           expect(err.status).toBe(404)
@@ -233,9 +233,9 @@ describe('http', () => {
   })
 
   test(
-    'use the host from whence the spec was fetched when constructing swagger2 URLs from a basePath',
+    "use the host from whence the spec was fetched when constructing swagger2 URLs from a basePath",
     async () => {
-      const client = await Swagger('http://localhost:8000/relative-host.swagger.yaml')
+      const client = await Swagger("http://localhost:8000/relative-host.swagger.yaml")
       try {
         const res = await client.apis.default.myOp()
         expect(res.status).toBe(404)
@@ -244,7 +244,7 @@ describe('http', () => {
         expect(e).toMatchObject({
           status: 404,
           response: {
-            url: 'http://localhost:8000/v1/endpoint'
+            url: "http://localhost:8000/v1/endpoint"
           }
         })
       }
@@ -252,9 +252,9 @@ describe('http', () => {
   )
 
   test(
-    'use the host from whence the spec was fetched when constructing OAS3 URLs from relative servers entries',
+    "use the host from whence the spec was fetched when constructing OAS3 URLs from relative servers entries",
     async () => {
-      const client = await Swagger('http://localhost:8000/relative-server.openapi.yaml')
+      const client = await Swagger("http://localhost:8000/relative-server.openapi.yaml")
       try {
         const res = await client.apis.default.myOp()
         expect(res.status).toBe(404)
@@ -263,24 +263,24 @@ describe('http', () => {
         expect(e).toMatchObject({
           status: 404,
           response: {
-            url: 'http://localhost:8000/v1/endpoint'
+            url: "http://localhost:8000/v1/endpoint"
           }
         })
       }
     }
   )
 
-  test('should err gracefully when requesting https from an http server', () => {
+  test("should err gracefully when requesting https from an http server", () => {
     return Swagger({
-      url: 'http://localhost:8000/petstore.json',
+      url: "http://localhost:8000/petstore.json",
       requestInterceptor: (req) => {
         const u = url.parse(req.url)
-        u.protocol = 'https'
+        u.protocol = "https"
         req.url = u.format()
         return req
       }
     }).catch((err) => {
-      expect(err.message).toEqual('request to https://localhost:8000/petstore.json failed, reason: socket hang up')
+      expect(err.message).toEqual("request to https://localhost:8000/petstore.json failed, reason: socket hang up")
     })
   })
 })

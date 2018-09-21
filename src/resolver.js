@@ -1,11 +1,11 @@
-import Http from './http'
-import mapSpec, {plugins} from './specmap'
-import {normalizeSwagger} from './helpers'
+import Http from "./http"
+import mapSpec, {plugins} from "./specmap"
+import {normalizeSwagger} from "./helpers"
 
 export function makeFetchJSON(http, opts = {}) {
   const {requestInterceptor, responseInterceptor} = opts
   // Set credentials with 'http.withCredentials' value
-  const credentials = (http.withCredentials) ? 'include' : 'same-origin'
+  const credentials = (http.withCredentials) ? "include" : "same-origin"
   return (docPath) => {
     return http({
       url: docPath,
@@ -13,7 +13,7 @@ export function makeFetchJSON(http, opts = {}) {
       requestInterceptor,
       responseInterceptor,
       headers: {
-        Accept: 'application/json'
+        Accept: "application/json"
       },
       credentials
     })
@@ -61,15 +61,15 @@ export default function resolve(obj) {
 
     const plugs = [plugins.refs]
 
-    if (typeof parameterMacro === 'function') {
+    if (typeof parameterMacro === "function") {
       plugs.push(plugins.parameters)
     }
 
-    if (typeof modelPropertyMacro === 'function') {
+    if (typeof modelPropertyMacro === "function") {
       plugs.push(plugins.properties)
     }
 
-    if (mode !== 'strict') {
+    if (mode !== "strict") {
       plugs.push(plugins.allOf)
     }
 

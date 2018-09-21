@@ -1,7 +1,7 @@
-import 'cross-fetch/polyfill' /* global fetch */
-import qs from 'qs'
-import jsYaml from '@kyleshockey/js-yaml'
-import isString from 'lodash/isString'
+import "cross-fetch/polyfill" /* global fetch */
+import qs from "qs"
+import jsYaml from "@kyleshockey/js-yaml"
+import isString from "lodash/isString"
 
 // For testing
 export const self = {
@@ -12,7 +12,7 @@ export const self = {
 // Handles fetch-like syntax and the case where there is only one object passed-in
 // (which will have the URL as a property). Also serilizes the response.
 export default async function http(url, request = {}) {
-  if (typeof url === 'object') {
+  if (typeof url === "object") {
     request = url
     url = request.url
   }
@@ -30,10 +30,10 @@ export default async function http(url, request = {}) {
 
   // for content-type=multipart\/form-data remove content-type from request before fetch
   // so that correct one with `boundary` is set
-  const contentType = request.headers['content-type'] || request.headers['Content-Type']
+  const contentType = request.headers["content-type"] || request.headers["Content-Type"]
   if (/multipart\/form-data/i.test(contentType)) {
-    delete request.headers['content-type']
-    delete request.headers['Content-Type']
+    delete request.headers["content-type"]
+    delete request.headers["Content-Type"]
   }
 
   // eslint-disable-next-line no-undef
@@ -66,10 +66,10 @@ export default async function http(url, request = {}) {
 }
 
 // exported for testing
-export const shouldDownloadAsText = (contentType = '') => /(json|xml|yaml|text)\b/.test(contentType)
+export const shouldDownloadAsText = (contentType = "") => /(json|xml|yaml|text)\b/.test(contentType)
 
 function parseBody(body, contentType) {
-  if (contentType === 'application/json') {
+  if (contentType === "application/json") {
     return JSON.parse(body)
   }
   return jsYaml.safeLoad(body)
@@ -85,7 +85,7 @@ export function serializeRes(oriRes, url, {loadSpec = false} = {}) {
     headers: serializeHeaders(oriRes.headers)
   }
 
-  const contentType = res.headers['content-type']
+  const contentType = res.headers["content-type"]
   const useText = loadSpec || shouldDownloadAsText(contentType)
 
   // Note: Response.blob not implemented in node-fetch 1.  Use buffer instead.
@@ -118,7 +118,7 @@ export function serializeHeaders(headers = {}) {
   const obj = {}
 
   // Iterate over headers, making multiple-headers into an array
-  if (typeof headers.forEach === 'function') {
+  if (typeof headers.forEach === "function") {
     headers.forEach((headerValue, header) => {
       if (obj[header] !== undefined) {
         obj[header] = Array.isArray(obj[header]) ? obj[header] : [obj[header]]
@@ -135,41 +135,41 @@ export function serializeHeaders(headers = {}) {
 }
 
 export function isFile(obj, navigatorObj) {
-  if (!navigatorObj && typeof navigator !== 'undefined') {
+  if (!navigatorObj && typeof navigator !== "undefined") {
     // eslint-disable-next-line no-undef
     navigatorObj = navigator
   }
-  if (navigatorObj && navigatorObj.product === 'ReactNative') {
-    if (obj && typeof obj === 'object' && typeof obj.uri === 'string') {
+  if (navigatorObj && navigatorObj.product === "ReactNative") {
+    if (obj && typeof obj === "object" && typeof obj.uri === "string") {
       return true
     }
     return false
   }
-  if (typeof File !== 'undefined') {
+  if (typeof File !== "undefined") {
     // eslint-disable-next-line no-undef
     return obj instanceof File
   }
-  return obj !== null && typeof obj === 'object' && typeof obj.pipe === 'function'
+  return obj !== null && typeof obj === "object" && typeof obj.pipe === "function"
 }
 
 function formatValue(input, skipEncoding) {
   const {collectionFormat, allowEmptyValue} = input
 
   // `input` can be string in OAS3 contexts
-  const value = typeof input === 'object' ? input.value : input
+  const value = typeof input === "object" ? input.value : input
 
   const SEPARATORS = {
-    csv: ',',
-    ssv: '%20',
-    tsv: '%09',
-    pipes: '|'
+    csv: ",",
+    ssv: "%20",
+    tsv: "%09",
+    pipes: "|"
   }
 
-  if (typeof value === 'undefined' && allowEmptyValue) {
-    return ''
+  if (typeof value === "undefined" && allowEmptyValue) {
+    return ""
   }
 
-  if (isFile(value) || typeof value === 'boolean') {
+  if (isFile(value) || typeof value === "boolean") {
     return value
   }
 
@@ -179,8 +179,8 @@ function formatValue(input, skipEncoding) {
     else encodeFn = obj => JSON.stringify(obj)
   }
 
-  if (typeof value === 'object' && !Array.isArray(value)) {
-    return ''
+  if (typeof value === "object" && !Array.isArray(value)) {
+    return ""
   }
 
   if (!Array.isArray(value)) {
@@ -188,9 +188,9 @@ function formatValue(input, skipEncoding) {
   }
 
   if (Array.isArray(value) && !collectionFormat) {
-    return value.map(encodeFn).join(',')
+    return value.map(encodeFn).join(",")
   }
-  if (collectionFormat === 'multi') {
+  if (collectionFormat === "multi") {
     return value.map(encodeFn)
   }
   return value.map(encodeFn).join(SEPARATORS[collectionFormat])
@@ -205,7 +205,7 @@ export function encodeFormOrQuery(data) {
    * @return {object} encoded parameter names and values
    */
   const encodedQuery = Object.keys(data).reduce((result, parameterName) => {
-    const isObject = a => a && typeof a === 'object'
+    const isObject = a => a && typeof a === "object"
     const paramValue = data[parameterName]
     const skipEncoding = !!paramValue.skipEncoding
     const encodedParameterName = skipEncoding ? parameterName : encodeURIComponent(parameterName)
@@ -215,16 +215,16 @@ export function encodeFormOrQuery(data) {
     )
     return result
   }, {})
-  return qs.stringify(encodedQuery, {encode: false, indices: false}) || ''
+  return qs.stringify(encodedQuery, {encode: false, indices: false}) || ""
 }
 
 // If the request has a `query` object, merge it into the request.url, and delete the object
 export function mergeInQueryOrForm(req = {}) {
-  const {url = '', query, form} = req
+  const {url = "", query, form} = req
 
   const joinSearch = (...strs) => {
-    const search = strs.filter(a => a).join('&') // Only truthy value
-    return search ? `?${search}` : '' // Only add '?' if there is a str
+    const search = strs.filter(a => a).join("&") // Only truthy value
+    return search ? `?${search}` : "" // Only add '?' if there is a str
   }
 
   if (form) {
@@ -232,10 +232,10 @@ export function mergeInQueryOrForm(req = {}) {
       return isFile(form[key].value)
     })
 
-    const contentType = req.headers['content-type'] || req.headers['Content-Type']
+    const contentType = req.headers["content-type"] || req.headers["Content-Type"]
 
     if (hasFile || /multipart\/form-data/i.test(contentType)) {
-      const FormData = require('isomorphic-form-data') // eslint-disable-line global-require
+      const FormData = require("isomorphic-form-data") // eslint-disable-line global-require
       req.body = new FormData()
       Object.keys(form).forEach((key) => {
         req.body.append(key, formatValue(form[key], true))
@@ -249,8 +249,8 @@ export function mergeInQueryOrForm(req = {}) {
   }
 
   if (query) {
-    const [baseUrl, oriSearch] = url.split('?')
-    let newStr = ''
+    const [baseUrl, oriSearch] = url.split("?")
+    let newStr = ""
 
     if (oriSearch) {
       const oriQuery = qs.parse(oriSearch)
@@ -272,7 +272,7 @@ export function makeHttp(httpFn, preFetch, postFetch) {
   preFetch = preFetch || (a => a)
 
   return (req) => {
-    if (typeof req === 'string') {
+    if (typeof req === "string") {
       req = {url: req}
     }
     self.mergeInQueryOrForm(req)

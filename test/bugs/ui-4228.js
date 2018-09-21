@@ -1,31 +1,31 @@
 // https://github.com/swagger-api/swagger-ui/issues/4228
 
-import Swagger from '../../src'
+import Swagger from "../../src"
 
 const spec = {
   paths: {
-    '/product/{productId}': {
+    "/product/{productId}": {
       get: {
-        operationId: 'Get',
+        operationId: "Get",
         produces: [
-          'application/json'
+          "application/json"
         ],
         responses: {
           200: {
-            description: 'Ok',
+            description: "Ok",
             schema: {
-              $ref: '#/definitions/ProductModel'
+              $ref: "#/definitions/ProductModel"
             }
           }
         },
         security: [],
         parameters: [
           {
-            in: 'path',
-            name: 'productId',
+            in: "path",
+            name: "productId",
             required: true,
-            format: 'double',
-            type: 'number'
+            format: "double",
+            type: "number"
           }
         ]
       }
@@ -35,32 +35,32 @@ const spec = {
     Props: {
       properties: {
         height: {
-          type: 'number',
-          format: 'double'
+          type: "number",
+          format: "double"
         }
       },
       required: [
-        'height'
+        "height"
       ],
-      type: 'object'
+      type: "object"
     },
     ProductModel: {
       properties: {
         properties: {
-          $ref: '#/definitions/Props'
+          $ref: "#/definitions/Props"
         }
       },
       required: [
-        'properties'
+        "properties"
       ],
-      type: 'object'
+      type: "object"
     }
   }
 }
 
 
 test(
-  'should resolve "properties" property name in model definition correctly',
+  "should resolve \"properties\" property name in model definition correctly",
   async () => {
     const res = await Swagger.resolve({
       spec
@@ -74,66 +74,66 @@ test(
           ProductModel: {
             properties: {
               properties: {
-                $$ref: '#/definitions/Props',
+                $$ref: "#/definitions/Props",
                 properties: {
                   height: {
-                    format: 'double',
-                    type: 'number'
+                    format: "double",
+                    type: "number"
                   }
                 },
-                required: ['height'],
-                type: 'object'
+                required: ["height"],
+                type: "object"
               }
             },
-            required: ['properties'],
-            type: 'object'
+            required: ["properties"],
+            type: "object"
           },
           Props: {
             properties: {
               height: {
-                format: 'double',
-                type: 'number'
+                format: "double",
+                type: "number"
               }
             },
-            required: ['height'],
-            type: 'object'
+            required: ["height"],
+            type: "object"
           }
         },
         paths: {
-          '/product/{productId}': {
+          "/product/{productId}": {
             get: {
-              __originalOperationId: 'Get',
-              operationId: 'Get',
+              __originalOperationId: "Get",
+              operationId: "Get",
               parameters: [
                 {
-                  format: 'double',
-                  in: 'path',
-                  name: 'productId',
+                  format: "double",
+                  in: "path",
+                  name: "productId",
                   required: true,
-                  type: 'number'
+                  type: "number"
                 }
               ],
-              produces: ['application/json'],
+              produces: ["application/json"],
               responses: {
                 200: {
-                  description: 'Ok',
+                  description: "Ok",
                   schema: {
-                    $$ref: '#/definitions/ProductModel',
+                    $$ref: "#/definitions/ProductModel",
                     properties: {
                       properties: {
-                        $$ref: '#/definitions/Props',
+                        $$ref: "#/definitions/Props",
                         properties: {
                           height: {
-                            format: 'double',
-                            type: 'number'
+                            format: "double",
+                            type: "number"
                           }
                         },
-                        required: ['height'],
-                        type: 'object'
+                        required: ["height"],
+                        type: "object"
                       }
                     },
-                    required: ['properties'],
-                    type: 'object'
+                    required: ["properties"],
+                    type: "object"
                   }
                 }
               },

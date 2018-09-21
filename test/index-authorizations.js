@@ -1,40 +1,40 @@
-import Swagger from '../src/index'
+import Swagger from "../src/index"
 
-describe('(instance) #execute', () => {
-  test('should be able to execute a simple operation', () => {
+describe("(instance) #execute", () => {
+  test("should be able to execute a simple operation", () => {
     const spec = {
       paths: {
-        '/pet': {
+        "/pet": {
           get: {
-            operationId: 'getPets'
+            operationId: "getPets"
           }
         }
       }
     }
     return Swagger({spec}).then((client) => {
       const http = jest.fn()
-      client.execute({http, operationId: 'getPets'})
+      client.execute({http, operationId: "getPets"})
       expect(http.mock.calls.length).toEqual(1)
       expect(http.mock.calls[0][0]).toEqual({
-        credentials: 'same-origin',
+        credentials: "same-origin",
         headers: {},
-        method: 'GET',
-        url: '/pet'
+        method: "GET",
+        url: "/pet"
       })
     })
   })
 
-  test('should add basic auth to a request', () => {
+  test("should add basic auth to a request", () => {
     const spec = {
       securityDefinitions: {
         myBasic: {
-          type: 'basic'
+          type: "basic"
         }
       },
       paths: {
-        '/pet': {
+        "/pet": {
           get: {
-            operationId: 'getPets',
+            operationId: "getPets",
             security: [{myBasic: []}]
           }
         }
@@ -42,37 +42,37 @@ describe('(instance) #execute', () => {
     }
 
     const authorizations = {
-      myBasic: {username: 'foo', password: 'bar'}
+      myBasic: {username: "foo", password: "bar"}
     }
 
     return Swagger({spec, authorizations}).then((client) => {
       const http = jest.fn()
-      client.execute({http, operationId: 'getPets'})
+      client.execute({http, operationId: "getPets"})
       expect(http.mock.calls.length).toEqual(1)
       expect(http.mock.calls[0][0]).toEqual({
-        credentials: 'same-origin',
+        credentials: "same-origin",
         headers: {
-          authorization: 'Basic Zm9vOmJhcg=='
+          authorization: "Basic Zm9vOmJhcg=="
         },
-        method: 'GET',
-        url: '/pet'
+        method: "GET",
+        url: "/pet"
       })
     })
   })
 
-  test('should add apiKey (header) auth to a request', () => {
+  test("should add apiKey (header) auth to a request", () => {
     const spec = {
       securityDefinitions: {
         petKey: {
-          type: 'apiKey',
-          name: 'petKey',
-          in: 'header'
+          type: "apiKey",
+          name: "petKey",
+          in: "header"
         }
       },
       paths: {
-        '/pet': {
+        "/pet": {
           get: {
-            operationId: 'getPets',
+            operationId: "getPets",
             security: [{petKey: []}]
           }
         }
@@ -80,37 +80,37 @@ describe('(instance) #execute', () => {
     }
 
     const authorizations = {
-      petKey: 'fooBar'
+      petKey: "fooBar"
     }
 
     return Swagger({spec, authorizations}).then((client) => {
       const http = jest.fn()
-      client.execute({http, operationId: 'getPets'})
+      client.execute({http, operationId: "getPets"})
       expect(http.mock.calls.length).toEqual(1)
       expect(http.mock.calls[0][0]).toEqual({
-        credentials: 'same-origin',
+        credentials: "same-origin",
         headers: {
-          petKey: 'fooBar'
+          petKey: "fooBar"
         },
-        method: 'GET',
-        url: '/pet'
+        method: "GET",
+        url: "/pet"
       })
     })
   })
 
-  test('should add apiKey (query) auth to a request', () => {
+  test("should add apiKey (query) auth to a request", () => {
     const spec = {
       securityDefinitions: {
         petKey: {
-          type: 'apiKey',
-          name: 'petKey',
-          in: 'query'
+          type: "apiKey",
+          name: "petKey",
+          in: "query"
         }
       },
       paths: {
-        '/pet': {
+        "/pet": {
           get: {
-            operationId: 'getPets',
+            operationId: "getPets",
             security: [{petKey: []}]
           }
         }
@@ -118,33 +118,33 @@ describe('(instance) #execute', () => {
     }
 
     const authorizations = {
-      petKey: 'barFoo'
+      petKey: "barFoo"
     }
 
     return Swagger({spec, authorizations}).then((client) => {
       const http = jest.fn()
-      client.execute({http, operationId: 'getPets'})
+      client.execute({http, operationId: "getPets"})
       expect(http.mock.calls.length).toEqual(1)
       expect(http.mock.calls[0][0]).toEqual({
-        credentials: 'same-origin',
+        credentials: "same-origin",
         headers: { },
-        method: 'GET',
-        url: '/pet?petKey=barFoo'
+        method: "GET",
+        url: "/pet?petKey=barFoo"
       })
     })
   })
 
-  test('should add oAuth to a request', () => {
+  test("should add oAuth to a request", () => {
     const spec = {
       securityDefinitions: {
         ohYou: {
-          type: 'oauth2',
+          type: "oauth2",
         }
       },
       paths: {
-        '/pet': {
+        "/pet": {
           get: {
-            operationId: 'getPets',
+            operationId: "getPets",
             security: [{ohYou: []}]
           }
         }
@@ -154,38 +154,38 @@ describe('(instance) #execute', () => {
     const authorizations = {
       ohYou: {
         token: {
-          access_token: 'one two'
+          access_token: "one two"
         }
       }
     }
 
     return Swagger({spec, authorizations}).then((client) => {
       const http = jest.fn()
-      client.execute({http, operationId: 'getPets'})
+      client.execute({http, operationId: "getPets"})
       expect(http.mock.calls.length).toEqual(1)
       expect(http.mock.calls[0][0]).toEqual({
-        credentials: 'same-origin',
+        credentials: "same-origin",
         headers: {
-          authorization: 'Bearer one two'
+          authorization: "Bearer one two"
         },
-        method: 'GET',
-        url: '/pet'
+        method: "GET",
+        url: "/pet"
       })
     })
   })
 
-  test('should use a custom oAuth token name if defined', () => {
+  test("should use a custom oAuth token name if defined", () => {
     const spec = {
       securityDefinitions: {
         idTokenAuth: {
-          type: 'oauth2',
-          'x-tokenName': 'id_token'
+          type: "oauth2",
+          "x-tokenName": "id_token"
         }
       },
       paths: {
-        '/pet': {
+        "/pet": {
           get: {
-            operationId: 'getPets',
+            operationId: "getPets",
             security: [{idTokenAuth: []}]
           }
         }
@@ -195,39 +195,39 @@ describe('(instance) #execute', () => {
     const authorizations = {
       idTokenAuth: {
         token: {
-          access_token: 'one two',
-          id_token: 'three four'
+          access_token: "one two",
+          id_token: "three four"
         }
       }
     }
 
     return Swagger({spec, authorizations}).then((client) => {
       const http = jest.fn()
-      client.execute({http, operationId: 'getPets'})
+      client.execute({http, operationId: "getPets"})
       expect(http.mock.calls.length).toEqual(1)
       expect(http.mock.calls[0][0]).toEqual({
-        credentials: 'same-origin',
+        credentials: "same-origin",
         headers: {
-          authorization: 'Bearer three four'
+          authorization: "Bearer three four"
         },
-        method: 'GET',
-        url: '/pet'
+        method: "GET",
+        url: "/pet"
       })
     })
   })
 
 
-  test('should replace any occurrence of `bearer` with `Bearer`', () => {
+  test("should replace any occurrence of `bearer` with `Bearer`", () => {
     const spec = {
       securityDefinitions: {
         testBearer: {
-          type: 'oauth2',
+          type: "oauth2",
         }
       },
       paths: {
-        '/pet': {
+        "/pet": {
           get: {
-            operationId: 'getPets',
+            operationId: "getPets",
             security: [{testBearer: []}]
           }
         }
@@ -237,61 +237,61 @@ describe('(instance) #execute', () => {
     const authorizations = {
       testBearer: {
         token: {
-          token_type: 'BeArEr',
-          access_token: 'one two'
+          token_type: "BeArEr",
+          access_token: "one two"
         }
       }
     }
 
     return Swagger({spec, authorizations}).then((client) => {
       const http = jest.fn()
-      client.execute({http, operationId: 'getPets'})
+      client.execute({http, operationId: "getPets"})
       expect(http.mock.calls.length).toEqual(1)
       expect(http.mock.calls[0][0]).toEqual({
-        credentials: 'same-origin',
+        credentials: "same-origin",
         headers: {
-          authorization: 'Bearer one two'
+          authorization: "Bearer one two"
         },
-        method: 'GET',
-        url: '/pet'
+        method: "GET",
+        url: "/pet"
       })
     })
   })
 
-  test('should add global securites', () => {
+  test("should add global securites", () => {
     const spec = {
       securityDefinitions: {
         petKey: {
-          type: 'apiKey',
-          in: 'header',
-          name: 'Auth'
+          type: "apiKey",
+          in: "header",
+          name: "Auth"
         }
       },
       security: [{petKey: []}],
       paths: {
-        '/pet': {
+        "/pet": {
           get: {
-            operationId: 'getPets',
+            operationId: "getPets",
           }
         }
       }
     }
 
     const authorizations = {
-      petKey: 'yup'
+      petKey: "yup"
     }
 
     return Swagger({spec, authorizations}).then((client) => {
       const http = jest.fn()
-      client.execute({http, operationId: 'getPets'})
+      client.execute({http, operationId: "getPets"})
       expect(http.mock.calls.length).toEqual(1)
       expect(http.mock.calls[0][0]).toEqual({
-        credentials: 'same-origin',
+        credentials: "same-origin",
         headers: {
-          Auth: 'yup'
+          Auth: "yup"
         },
-        method: 'GET',
-        url: '/pet'
+        method: "GET",
+        url: "/pet"
       })
     })
   })

@@ -1,7 +1,7 @@
-import lib from '../lib'
+import lib from "../lib"
 
 export default {
-  key: 'parameters',
+  key: "parameters",
   plugin: (parameters, key, fullPath, specmap, patch) => {
     if (Array.isArray(parameters) && parameters.length) {
       const val = Object.assign([], parameters)

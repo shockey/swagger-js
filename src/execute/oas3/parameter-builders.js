@@ -1,4 +1,4 @@
-import stylize from './style-serializer'
+import stylize from "./style-serializer"
 
 export default {
   path,
@@ -12,7 +12,7 @@ function path({req, value, parameter}) {
   const styledValue = stylize({
     key: parameter.name,
     value,
-    style: style || 'simple',
+    style: style || "simple",
     explode: explode || false,
     escape: true,
   })
@@ -24,17 +24,17 @@ function query({req, value, parameter}) {
   req.query = req.query || {}
 
   if (value === false) {
-    value = 'false'
+    value = "false"
   }
 
   if (value === 0) {
-    value = '0'
+    value = "0"
   }
 
   if (value) {
     const type = typeof value
 
-    if (parameter.style === 'deepObject') {
+    if (parameter.style === "deepObject") {
       const valueKeys = Object.keys(value)
       valueKeys.forEach((k) => {
         const v = value[k]
@@ -42,17 +42,17 @@ function query({req, value, parameter}) {
           value: stylize({
             key: k,
             value: v,
-            style: 'deepObject',
-            escape: parameter.allowReserved ? 'unsafe' : 'reserved',
+            style: "deepObject",
+            escape: parameter.allowReserved ? "unsafe" : "reserved",
           }),
           skipEncoding: true
         }
       })
     }
     else if (
-      type === 'object' &&
+      type === "object" &&
       !Array.isArray(value) &&
-      (parameter.style === 'form' || !parameter.style) &&
+      (parameter.style === "form" || !parameter.style) &&
       (parameter.explode || parameter.explode === undefined)
     ) {
       // form explode needs to be handled here,
@@ -65,8 +65,8 @@ function query({req, value, parameter}) {
           value: stylize({
             key: k,
             value: v,
-            style: parameter.style || 'form',
-            escape: parameter.allowReserved ? 'unsafe' : 'reserved',
+            style: parameter.style || "form",
+            escape: parameter.allowReserved ? "unsafe" : "reserved",
           }),
           skipEncoding: true
         }
@@ -77,9 +77,9 @@ function query({req, value, parameter}) {
         value: stylize({
           key: parameter.name,
           value,
-          style: parameter.style || 'form',
-          explode: typeof parameter.explode === 'undefined' ? true : parameter.explode,
-          escape: parameter.allowReserved ? 'unsafe' : 'reserved',
+          style: parameter.style || "form",
+          explode: typeof parameter.explode === "undefined" ? true : parameter.explode,
+          escape: parameter.allowReserved ? "unsafe" : "reserved",
         }),
         skipEncoding: true
       }
@@ -93,9 +93,9 @@ function query({req, value, parameter}) {
 }
 
 const PARAMETER_HEADER_BLACKLIST = [
-  'accept',
-  'authorization',
-  'content-type'
+  "accept",
+  "authorization",
+  "content-type"
 ]
 
 function header({req, parameter, value}) {
@@ -105,12 +105,12 @@ function header({req, parameter, value}) {
     return
   }
 
-  if (typeof value !== 'undefined') {
+  if (typeof value !== "undefined") {
     req.headers[parameter.name] = stylize({
       key: parameter.name,
       value,
-      style: parameter.style || 'simple',
-      explode: typeof parameter.explode === 'undefined' ? false : parameter.explode,
+      style: parameter.style || "simple",
+      explode: typeof parameter.explode === "undefined" ? false : parameter.explode,
       escape: false,
     })
   }
@@ -120,19 +120,19 @@ function cookie({req, parameter, value}) {
   req.headers = req.headers || {}
   const type = typeof value
 
-  if (type !== 'undefined') {
+  if (type !== "undefined") {
     const prefix = (
-      type === 'object' &&
+      type === "object" &&
       !Array.isArray(value) &&
       parameter.explode
-    ) ? '' : `${parameter.name}=`
+    ) ? "" : `${parameter.name}=`
 
     req.headers.Cookie = prefix + stylize({
       key: parameter.name,
       value,
       escape: false,
-      style: parameter.style || 'form',
-      explode: typeof parameter.explode === 'undefined' ? false : parameter.explode
+      style: parameter.style || "form",
+      explode: typeof parameter.explode === "undefined" ? false : parameter.explode
     })
   }
 }

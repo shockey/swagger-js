@@ -1,7 +1,7 @@
-import jsonPatch from 'fast-json-patch'
-import regenerator from 'babel-runtime/regenerator'
-import deepExtend from 'deep-extend'
-import deepAssign from '@kyleshockey/object-assign-deep'
+import jsonPatch from "fast-json-patch"
+import regenerator from "babel-runtime/regenerator"
+import deepExtend from "deep-extend"
+import deepAssign from "@kyleshockey/object-assign-deep"
 
 export default {
   add,
@@ -37,12 +37,12 @@ function applyPatch(obj, patch, opts) {
     path: patch.path && normalizeJSONPath(patch.path)
   })
 
-  if (patch.op === 'merge') {
+  if (patch.op === "merge") {
     const newValue = getInByJsonPath(obj, patch.path)
     Object.assign(newValue, patch.value)
     jsonPatch.applyPatch(obj, [replace(patch.path, newValue)])
   }
-  else if (patch.op === 'mergeDeep') {
+  else if (patch.op === "mergeDeep") {
     const currentValue = getInByJsonPath(obj, patch.path)
 
     // Iterate the properties of the patch
@@ -82,7 +82,7 @@ function applyPatch(obj, patch, opts) {
       }
     }
   }
-  else if (patch.op === 'add' && patch.path === '' && isObject(patch.value)) {
+  else if (patch.op === "add" && patch.path === "" && isObject(patch.value)) {
     // { op: 'add', path: '', value: { a: 1, b: 2 }}
     // has no effect: json patch refuses to do anything.
     // so let's break that patch down into a set of patches,
@@ -91,7 +91,7 @@ function applyPatch(obj, patch, opts) {
     const patches = Object.keys(patch.value)
       .reduce((arr, key) => {
         arr.push({
-          op: 'add',
+          op: "add",
           path: `/${normalizeJSONPath(key)}`,
           value: patch.value[key]
         })
@@ -100,7 +100,7 @@ function applyPatch(obj, patch, opts) {
 
     jsonPatch.applyPatch(obj, patches)
   }
-  else if (patch.op === 'replace' && patch.path === '') {
+  else if (patch.op === "replace" && patch.path === "") {
     let value = patch.value
 
     if (opts.allowMetaPatches && patch.meta && isAdditiveMutation(patch) &&
@@ -127,12 +127,12 @@ function applyPatch(obj, patch, opts) {
 function normalizeJSONPath(path) {
   if (Array.isArray(path)) {
     if (path.length < 1) {
-      return ''
+      return ""
     }
 
-    return '/' + path.map((item) => { // eslint-disable-line prefer-template
-      return (item + '').replace(/~/g, '~0').replace(/\//g, '~1') // eslint-disable-line prefer-template
-    }).join('/')
+    return "/" + path.map((item) => { // eslint-disable-line prefer-template
+      return (item + "").replace(/~/g, "~0").replace(/\//g, "~1") // eslint-disable-line prefer-template
+    }).join("/")
   }
 
   return path
@@ -144,33 +144,33 @@ function normalizeJSONPath(path) {
 // =========================
 
 function add(path, value) {
-  return {op: 'add', path, value}
+  return {op: "add", path, value}
 }
 
 function _get(path) {
-  return {op: '_get', path}
+  return {op: "_get", path}
 }
 
 function replace(path, value, meta) {
-  return {op: 'replace', path, value, meta}
+  return {op: "replace", path, value, meta}
 }
 
 function remove(path, value) {
-  return {op: 'remove', path}
+  return {op: "remove", path}
 }
 
 // Custom wrappers
 function merge(path, value) {
-  return {type: 'mutation', op: 'merge', path, value}
+  return {type: "mutation", op: "merge", path, value}
 }
 
 // Custom wrappers
 function mergeDeep(path, value) {
-  return {type: 'mutation', op: 'mergeDeep', path, value}
+  return {type: "mutation", op: "mergeDeep", path, value}
 }
 
 function context(path, value) {
-  return {type: 'context', path, value}
+  return {type: "context", path, value}
 }
 
 
@@ -276,7 +276,7 @@ function parentPathMatch(path, arr) {
 
 function getIn(obj, path) {
   return path.reduce((val, token) => {
-    if (typeof token !== 'undefined' && val) {
+    if (typeof token !== "undefined" && val) {
       return val[token]
     }
     return val
@@ -302,7 +302,7 @@ function flatten(arr) {
 }
 
 function cleanArray(arr) {
-  return arr.filter(elm => typeof elm !== 'undefined')
+  return arr.filter(elm => typeof elm !== "undefined")
 }
 
 
@@ -311,7 +311,7 @@ function cleanArray(arr) {
 // =========================
 
 function isObject(val) {
-  return val && typeof val === 'object'
+  return val && typeof val === "object"
 }
 
 function isPromise(val) {
@@ -319,7 +319,7 @@ function isPromise(val) {
 }
 
 function isFunction(val) {
-  return val && typeof val === 'function'
+  return val && typeof val === "function"
 }
 
 function isError(patch) {
@@ -329,7 +329,7 @@ function isError(patch) {
 function isJsonPatch(patch) {
   if (isPatch(patch)) {
     const op = patch.op
-    return op === 'add' || op === 'remove' || op === 'replace'
+    return op === "add" || op === "remove" || op === "replace"
   }
   return false
 }
@@ -339,19 +339,19 @@ function isGenerator(thing) {
 }
 
 function isMutation(patch) {
-  return isJsonPatch(patch) || (isPatch(patch) && patch.type === 'mutation')
+  return isJsonPatch(patch) || (isPatch(patch) && patch.type === "mutation")
 }
 
 function isAdditiveMutation(patch) {
-  return isMutation(patch) && (patch.op === 'add' || patch.op === 'replace' || patch.op === 'merge' || patch.op === 'mergeDeep')
+  return isMutation(patch) && (patch.op === "add" || patch.op === "replace" || patch.op === "merge" || patch.op === "mergeDeep")
 }
 
 function isContextPatch(patch) {
-  return isPatch(patch) && patch.type === 'context'
+  return isPatch(patch) && patch.type === "context"
 }
 
 function isPatch(patch) {
-  return patch && typeof patch === 'object'
+  return patch && typeof patch === "object"
 }
 
 function getInByJsonPath(obj, jsonPath) {

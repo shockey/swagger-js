@@ -1,36 +1,36 @@
-import mapSpec, {plugins} from '../../src/specmap'
+import mapSpec, {plugins} from "../../src/specmap"
 
-if (process.env.NODE_LIVETESTS === 'true') {
-  describe('Live tests against the internet', () => {
-    test('should fetch ponelat/common/1', () => {
+if (process.env.NODE_LIVETESTS === "true") {
+  describe("Live tests against the internet", () => {
+    test("should fetch ponelat/common/1", () => {
       jest.setTimeout(30 * 1000)
 
       return mapSpec({
         spec: {
-          hello: 'josh',
-          $ref: 'https://swagger.io/domains/ponelat/common/1#/pathitems/EntityOperations'
+          hello: "josh",
+          $ref: "https://swagger.io/domains/ponelat/common/1#/pathitems/EntityOperations"
         },
         plugins: [plugins.refs]
       }).then((res) => {
         expect(res).toEqual({
           errors: [],
           spec: {
-            hello: 'josh',
+            hello: "josh",
             get: {
-              description: 'Returns a pet based on ID',
-              summary: 'Find pet by ID',
+              description: "Returns a pet based on ID",
+              summary: "Find pet by ID",
               responses: {
                 default: {
-                  description: 'General Error',
+                  description: "General Error",
                   schema: {
-                    required: ['code', 'message'],
+                    required: ["code", "message"],
                     properties: {
                       code: {
-                        type: 'integer',
-                        format: 'int32'
+                        type: "integer",
+                        format: "int32"
                       },
                       message: {
-                        type: 'string'
+                        type: "string"
                       }
                     }
                   }
@@ -44,8 +44,8 @@ if (process.env.NODE_LIVETESTS === 'true') {
   })
 }
 else {
-  describe('Live tests against the internet', () => {
-    test('(skipping test suite; `NODE_LIVETESTS` is not enabled', () => {
+  describe("Live tests against the internet", () => {
+    test("(skipping test suite; `NODE_LIVETESTS` is not enabled", () => {
       expect(true).toEqual(true)
     })
   })

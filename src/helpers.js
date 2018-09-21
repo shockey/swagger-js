@@ -1,9 +1,9 @@
-import isObject from 'lodash/isObject'
-import startsWith from 'lodash/startsWith'
+import isObject from "lodash/isObject"
+import startsWith from "lodash/startsWith"
 
 const toLower = str => String.prototype.toLowerCase.call(str)
 const escapeString = (str) => {
-  return str.replace(/[^\w]/gi, '_')
+  return str.replace(/[^\w]/gi, "_")
 }
 
 // Spec version detection
@@ -13,7 +13,7 @@ export function isOAS3(spec) {
     return false
   }
 
-  return startsWith(oasVersion, '3')
+  return startsWith(oasVersion, "3")
 }
 
 export function isSwagger2(spec) {
@@ -22,15 +22,15 @@ export function isSwagger2(spec) {
     return false
   }
 
-  return startsWith(swaggerVersion, '2')
+  return startsWith(swaggerVersion, "2")
 }
 
 // Strategy for determining operationId
-export function opId(operation, pathName, method = '', {v2OperationIdCompatibilityMode} = {}) {
-  if (!operation || typeof operation !== 'object') {
+export function opId(operation, pathName, method = "", {v2OperationIdCompatibilityMode} = {}) {
+  if (!operation || typeof operation !== "object") {
     return null
   }
-  const idWithoutWhitespace = (operation.operationId || '').replace(/\s/g, '')
+  const idWithoutWhitespace = (operation.operationId || "").replace(/\s/g, "")
   if (idWithoutWhitespace.length) {
     return escapeString(operation.operationId)
   }
@@ -42,14 +42,14 @@ export function opId(operation, pathName, method = '', {v2OperationIdCompatibili
 export function idFromPathMethod(pathName, method, {v2OperationIdCompatibilityMode} = {}) {
   if (v2OperationIdCompatibilityMode) {
     let res = `${method.toLowerCase()}_${pathName}`
-      .replace(/[\s!@#$%^&*()_+=[{\]};:<>|./?,\\'""-]/g, '_')
+      .replace(/[\s!@#$%^&*()_+=[{\]};:<>|./?,\\'""-]/g, "_")
 
     res = res || `${pathName.substring(1)}_${method}`
 
     return res
-      .replace(/((_){2,})/g, '_')
-      .replace(/^(_)*/g, '')
-      .replace(/([_])*$/g, '')
+      .replace(/((_){2,})/g, "_")
+      .replace(/^(_)*/g, "")
+      .replace(/([_])*$/g, "")
   }
   return `${toLower(method)}${escapeString(pathName)}`
 }
@@ -66,7 +66,7 @@ export function getOperationRaw(spec, id) {
 
 
   return findOperation(spec, ({pathName, method, operation}) => {
-    if (!operation || typeof operation !== 'object') {
+    if (!operation || typeof operation !== "object") {
       return false
     }
 
@@ -88,7 +88,7 @@ export function findOperation(spec, predicate) {
 // iterate over each operation, and fire a callback with details
 // `find=true` will stop iterating, when the cb returns truthy
 export function eachOperation(spec, cb, find) {
-  if (!spec || typeof spec !== 'object' || !spec.paths || typeof spec.paths !== 'object') {
+  if (!spec || typeof spec !== "object" || !spec.paths || typeof spec.paths !== "object") {
     return null
   }
 
@@ -97,11 +97,11 @@ export function eachOperation(spec, cb, find) {
   // Iterate over the spec, collecting operations
   for (const pathName in paths) {
     for (const method in paths[pathName]) {
-      if (method.toUpperCase() === 'PARAMETERS') {
+      if (method.toUpperCase() === "PARAMETERS") {
         continue
       }
       const operation = paths[pathName][method]
-      if (!operation || typeof operation !== 'object') {
+      if (!operation || typeof operation !== "object") {
         continue
       }
 
@@ -164,7 +164,7 @@ export function normalizeSwagger(parsedSpec) {
             o.operationId = `${oid}${i + 1}`
           })
         }
-        else if (typeof operation.operationId !== 'undefined') {
+        else if (typeof operation.operationId !== "undefined") {
           // Ensure we always add the normalized operation ID if one already exists
           // ( potentially different, given that we normalize our IDs)
           // ... _back_ to the spec. Otherwise, they might not line up
@@ -174,14 +174,14 @@ export function normalizeSwagger(parsedSpec) {
         }
       }
 
-      if (method !== 'parameters') {
+      if (method !== "parameters") {
         // Add inherited consumes, produces, parameters, securities
         const inheritsList = []
         const toBeInherit = {}
 
         // Global-levels
         for (const key in spec) {
-          if (key === 'produces' || key === 'consumes' || key === 'security') {
+          if (key === "produces" || key === "consumes" || key === "security") {
             toBeInherit[key] = spec[key]
             inheritsList.push(toBeInherit)
           }
@@ -199,7 +199,7 @@ export function normalizeSwagger(parsedSpec) {
               if (!operation[inheritName]) {
                 operation[inheritName] = inherits[inheritName]
               }
-              else if (inheritName === 'parameters') {
+              else if (inheritName === "parameters") {
                 for (const param of inherits[inheritName]) {
                   const exists = operation[inheritName].some((opParam) => {
                     return (opParam.name && opParam.name === param.name)

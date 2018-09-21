@@ -1,29 +1,29 @@
-import assign from 'lodash/assign'
-import getIn from 'lodash/get'
-import isPlainObject from 'lodash/isPlainObject'
-import isArray from 'lodash/isArray'
-import btoa from 'btoa'
-import url from 'url'
-import cookie from 'cookie'
-import stockHttp, {mergeInQueryOrForm} from '../http'
-import createError from '../specmap/lib/create-error'
+import assign from "lodash/assign"
+import getIn from "lodash/get"
+import isPlainObject from "lodash/isPlainObject"
+import isArray from "lodash/isArray"
+import btoa from "btoa"
+import url from "url"
+import cookie from "cookie"
+import stockHttp, {mergeInQueryOrForm} from "../http"
+import createError from "../specmap/lib/create-error"
 
-import SWAGGER2_PARAMETER_BUILDERS from './swagger2/parameter-builders'
-import OAS3_PARAMETER_BUILDERS from './oas3/parameter-builders'
-import oas3BuildRequest from './oas3/build-request'
-import swagger2BuildRequest from './swagger2/build-request'
+import SWAGGER2_PARAMETER_BUILDERS from "./swagger2/parameter-builders"
+import OAS3_PARAMETER_BUILDERS from "./oas3/parameter-builders"
+import oas3BuildRequest from "./oas3/build-request"
+import swagger2BuildRequest from "./swagger2/build-request"
 import {
   getOperationRaw,
   idFromPathMethod,
   legacyIdFromPathMethod,
   isOAS3
-} from '../helpers'
+} from "../helpers"
 
 const arrayOrEmpty = (ar) => {
   return Array.isArray(ar) ? ar : []
 }
 
-const OperationNotFoundError = createError('OperationNotFoundError', function (message, extra, oriError) {
+const OperationNotFoundError = createError("OperationNotFoundError", function (message, extra, oriError) {
   this.originalError = oriError
   Object.assign(this, extra || {})
 })
@@ -122,11 +122,11 @@ export function buildRequest(options) {
   }
 
   // Set credentials with 'http.withCredentials' value
-  const credentials = (http && http.withCredentials) ? 'include' : 'same-origin'
+  const credentials = (http && http.withCredentials) ? "include" : "same-origin"
 
   // Base Template
   let req = {
-    url: '',
+    url: "",
     credentials,
     headers: {},
     cookies: {}
@@ -185,13 +185,13 @@ export function buildRequest(options) {
     const builder = parameterBuilders[parameter.in]
     let value
 
-    if (parameter.in === 'body' && parameter.schema && parameter.schema.properties) {
+    if (parameter.in === "body" && parameter.schema && parameter.schema.properties) {
       value = parameters
     }
 
     value = parameter && parameter.name && parameters[parameter.name]
 
-    if (typeof value === 'undefined') {
+    if (typeof value === "undefined") {
         // check for `name-in` formatted key
       value = parameter && parameter.name && parameters[`${parameter.in}.${parameter.name}`]
     }
@@ -206,20 +206,20 @@ export function buildRequest(options) {
       return
     }
 
-    if (typeof parameter.default !== 'undefined' && typeof value === 'undefined') {
+    if (typeof parameter.default !== "undefined" && typeof value === "undefined") {
       value = parameter.default
     }
 
-    if (typeof value === 'undefined' && parameter.required && !parameter.allowEmptyValue) {
+    if (typeof value === "undefined" && parameter.required && !parameter.allowEmptyValue) {
       throw new Error(`Required parameter ${parameter.name} is not provided`)
     }
 
-    if (specIsOAS3 && parameter.schema && parameter.schema.type === 'object' && typeof value === 'string') {
+    if (specIsOAS3 && parameter.schema && parameter.schema.type === "object" && typeof value === "string") {
       try {
         value = JSON.parse(value)
       }
       catch (e) {
-        throw new Error('Could not parse object parameter value string as JSON')
+        throw new Error("Could not parse object parameter value string as JSON")
       }
     }
 
@@ -245,10 +245,10 @@ export function buildRequest(options) {
   if (req.cookies && Object.keys(req.cookies).length) {
     const cookieString = Object.keys(req.cookies).reduce((prev, cookieName) => {
       const cookieValue = req.cookies[cookieName]
-      const prefix = prev ? '&' : ''
+      const prefix = prev ? "&" : ""
       const stringified = cookie.serialize(cookieName, cookieValue)
       return prev + prefix + stringified
-    }, '')
+    }, "")
     req.headers.Cookie = cookieString
   }
 
@@ -266,7 +266,7 @@ export function buildRequest(options) {
   return req
 }
 
-const stripNonAlpha = str => (str ? str.replace(/\W/g, '') : null)
+const stripNonAlpha = str => (str ? str.replace(/\W/g, "") : null)
 
 export function baseUrl(obj) {
   const specIsOAS3 = isOAS3(obj.spec)
@@ -276,11 +276,11 @@ export function baseUrl(obj) {
 
 function oas3BaseUrl({spec, pathName, method, server, contextUrl, serverVariables = {}}) {
   const servers =
-    getIn(spec, ['paths', pathName, (method || '').toLowerCase(), 'servers']) ||
-    getIn(spec, ['paths', pathName, 'servers']) ||
-    getIn(spec, ['servers'])
+    getIn(spec, ["paths", pathName, (method || "").toLowerCase(), "servers"]) ||
+    getIn(spec, ["paths", pathName, "servers"]) ||
+    getIn(spec, ["servers"])
 
-  let selectedServerUrl = ''
+  let selectedServerUrl = ""
   let selectedServerObj = null
 
   if (server && servers && servers.length) {
@@ -298,7 +298,7 @@ function oas3BaseUrl({spec, pathName, method, server, contextUrl, serverVariable
     selectedServerObj = servers[0]
   }
 
-  if (selectedServerUrl.indexOf('{') > -1) {
+  if (selectedServerUrl.indexOf("{") > -1) {
     // do variable substitution
     const varNames = getVariableTemplateNames(selectedServerUrl)
     varNames.forEach((vari) => {
@@ -307,7 +307,7 @@ function oas3BaseUrl({spec, pathName, method, server, contextUrl, serverVariable
         const variableDefinition = selectedServerObj.variables[vari]
         const variableValue = serverVariables[vari] || variableDefinition.default
 
-        const re = new RegExp(`{${vari}}`, 'g')
+        const re = new RegExp(`{${vari}}`, "g")
         selectedServerUrl = selectedServerUrl.replace(re, variableValue)
       }
     })
@@ -316,13 +316,13 @@ function oas3BaseUrl({spec, pathName, method, server, contextUrl, serverVariable
   return buildOas3UrlWithContext(selectedServerUrl, contextUrl)
 }
 
-function buildOas3UrlWithContext(ourUrl = '', contextUrl = '') {
+function buildOas3UrlWithContext(ourUrl = "", contextUrl = "") {
   const parsedUrl = url.parse(ourUrl)
   const parsedContextUrl = url.parse(contextUrl)
 
-  const computedScheme = stripNonAlpha(parsedUrl.protocol) || stripNonAlpha(parsedContextUrl.protocol) || ''
+  const computedScheme = stripNonAlpha(parsedUrl.protocol) || stripNonAlpha(parsedContextUrl.protocol) || ""
   const computedHost = parsedUrl.host || parsedContextUrl.host
-  const computedPath = parsedUrl.pathname || ''
+  const computedPath = parsedUrl.pathname || ""
   let res
 
   if (computedScheme && computedHost) {
@@ -334,7 +334,7 @@ function buildOas3UrlWithContext(ourUrl = '', contextUrl = '') {
     res = computedPath
   }
 
-  return res[res.length - 1] === '/' ? res.slice(0, -1) : res
+  return res[res.length - 1] === "/" ? res.slice(0, -1) : res
 }
 
 function getVariableTemplateNames(str) {
@@ -350,13 +350,13 @@ function getVariableTemplateNames(str) {
 }
 
 // Compose the baseUrl ( scheme + host + basePath )
-function swagger2BaseUrl({spec, scheme, contextUrl = ''}) {
+function swagger2BaseUrl({spec, scheme, contextUrl = ""}) {
   const parsedContextUrl = url.parse(contextUrl)
   const firstSchemeInSpec = Array.isArray(spec.schemes) ? spec.schemes[0] : null
 
-  const computedScheme = scheme || firstSchemeInSpec || stripNonAlpha(parsedContextUrl.protocol) || 'http'
-  const computedHost = spec.host || parsedContextUrl.host || ''
-  const computedPath = spec.basePath || ''
+  const computedScheme = scheme || firstSchemeInSpec || stripNonAlpha(parsedContextUrl.protocol) || "http"
+  const computedHost = spec.host || parsedContextUrl.host || ""
+  const computedPath = spec.basePath || ""
   let res
 
   if (computedScheme && computedHost) {
@@ -369,5 +369,5 @@ function swagger2BaseUrl({spec, scheme, contextUrl = ''}) {
   }
 
   // If last character is '/', trim it off
-  return res[res.length - 1] === '/' ? res.slice(0, -1) : res
+  return res[res.length - 1] === "/" ? res.slice(0, -1) : res
 }
